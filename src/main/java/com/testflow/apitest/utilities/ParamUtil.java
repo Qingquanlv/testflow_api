@@ -1,25 +1,30 @@
 package com.testflow.apitest.utilities;
 
+import com.alibaba.fastjson.JSON;
 import com.testflow.apitest.business.BufferManager;
+import com.testflow.apitest.servicesaccess.ServiceAccess;
 import com.zf.zson.ZSON;
 import com.zf.zson.result.ZsonResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ *
+ * @author qq.lv
+ * @date 2019/6/22
+ */
 public class ParamUtil {
-
+    private static Logger logger = LoggerFactory.getLogger(ParamUtil.class);
     public static Pattern paramPattern = Pattern.compile("\\$\\{.*?\\}");
 
-    /**
-     * 转化参数（Xpath，Json，实体的属性值）
-     *
-     * @param val 带参数的请求串
-     * @return String 返回转化后的参数
-     */
-    public static String parseJsonParam(String val)
+    public static String parseParam(String val)
     {
         //获取字符串中所有参数
         List<String> paramList = catchParamList(val);
@@ -29,9 +34,11 @@ public class ParamUtil {
             String paramCoverted = convertParam(param);
             String[] bufferKeyAndValue = getBufferKeyAndValue(paramCoverted);
             //从缓存中获取数据
-            String jsonStr = BufferManager.getBufferByKey(bufferKeyAndValue[0]).toString();
-            //获取配置的值，通过Json匹配，默认匹配第一个
-            String targetStr = getMapValViaJson(jsonStr, bufferKeyAndValue[1]);
+            Object obj = BufferManager.getBufferByKey(bufferKeyAndValue[0]);
+            if (! (obj instanceof String)) {
+                obj = FastJsonUtil.toJson(obj);
+            }
+            String targetStr = getMapValFromJson(obj.toString(), bufferKeyAndValue[1]);
             val = updateParameStr(val, param, targetStr);
         }
         return val;
@@ -86,6 +93,12 @@ public class ParamUtil {
         return list;
     }
 
+    private static String updateParameStr(String sourceStr, String matchMapKey, String matchMapVal)
+    {
+        sourceStr = sourceStr.replace(matchMapKey, matchMapVal);
+        return sourceStr;
+    }
+
     /**
      * 通过Zson匹配获取Json串
      *
@@ -93,7 +106,7 @@ public class ParamUtil {
      * @param mapKey : 匹配的xpath字符串
      * @return String ：返回匹配后的Json串
      */
-    private static String getMapValViaJson(String jsonStr, String mapKey)
+    private static String getMapValFromJson(String jsonStr, String mapKey)
     {
         ZsonResult zr = ZSON.parseJson(jsonStr);
         zr.getClassTypes();
@@ -101,9 +114,88 @@ public class ParamUtil {
         return names.get(0).toString();
     }
 
-    private static String updateParameStr(String sourceStr, String matchMapKey, String matchMapVal)
+    /**
+     * 通过A:B:C格式匹配实体
+     *
+     * @param obj : 要匹配的对象实体
+     * @param mapKey : 匹配的mapKey字符串
+     * @return Object ：返回匹配后的实例
+     */
+    private static Object getMapValFromInstance(Object obj, String mapKey)
     {
-        sourceStr = sourceStr.replace(matchMapKey, matchMapVal);
-        return sourceStr;
+        String[] keyList = mapKey.split("\\/");
+        for (String key : keyList) {
+            if (!"".equals(key) || null != key) {
+                if ("".equals(isListItem(key))) {}
+                Method fieldSetMet = getValueViaGetMet(key, obj);
+                obj = ServiceAccess.execMethod(obj, fieldSetMet);
+            }
+        }
+        return obj;
+    }
+
+    /**
+     * 判断是否存在某属性的 get方法
+     *
+     * @param fieldSetName : 需要获取方法对应的属性
+     * @param obj ： 需要获取方法对应的实例
+     * @return Method 返回get方法字节码
+     */
+    private static Method getValueViaGetMet(String fieldSetName, Object obj) {
+        fieldSetName = parGetName(fieldSetName);
+        Method[] methods = ServiceAccess.getDeclaredMethod(obj);
+        Method fieldSetMet = getGetMet(methods, fieldSetName);
+        return fieldSetMet;
+    }
+
+    /**
+     * 获取某属性的 get方法
+     *
+     * @param methods
+     * @param fieldGetMet
+     * @return boolean
+     */
+    private static Method getGetMet(Method[] methods, String fieldGetMet) {
+        Method tarMet = null;
+        for (Method met : methods) {
+            if (fieldGetMet.equals(met.getName())) {
+                tarMet = met;
+            }
+        }
+        if (tarMet == null)
+        {
+            logger.info(String.format("Get method \"%s\" fieldGetMet failed, please check if method \"%s\" is exist.", fieldGetMet, fieldGetMet));
+        }
+        return tarMet;
+    }
+
+    /**
+     * 拼接属性的 get方法
+     *
+     * @param fieldName
+     * @return String
+     */
+    private static String parGetName(String fieldName) {
+        if (null == fieldName || "".equals(fieldName)) {
+            return null;
+        }
+        int startIndex = 0;
+        if (fieldName.charAt(0) == '_') {
+            startIndex = 1;
+        }
+        return "get"
+                + fieldName.substring(startIndex, startIndex + 1).toUpperCase()
+                + fieldName.substring(startIndex + 1);
+    }
+
+    private static String isListItem(String value)
+    {
+        String pattern = "\\[(.*)\\]";
+        Pattern r = Pattern.compile(pattern);
+        Matcher ma = r.matcher(value);
+        boolean rs = ma.find();
+        if (Pattern.matches(pattern, value))
+            value = ma.group(1);
+        return value;
     }
 }

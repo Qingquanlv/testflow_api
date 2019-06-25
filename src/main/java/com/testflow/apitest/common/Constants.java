@@ -7,4 +7,5 @@ public class Constants {
     public static final String COLON = ":";
 
     public static final String SERVICES_PATH = "com.testflow.apitest.servicesaccess.";
+    public static final String PARSE_VALUE_FILE_NAME = "ParseValueFileName.jar";
 }

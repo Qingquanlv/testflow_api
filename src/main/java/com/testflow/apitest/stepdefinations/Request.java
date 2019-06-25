@@ -20,8 +20,8 @@ public class Request {
      *
      */
     public void sendRequest(String requestJsonStr, String url, String responce) {
-        requestJsonStr = ParamUtil.parseJsonParam(requestJsonStr);
-        url = ParamUtil.parseJsonParam(url);
+        requestJsonStr = ParamUtil.parseParam(requestJsonStr);
+        url = ParamUtil.parseParam(url);
         //保存Response到Buffer
         String requestObject = HttpClientUtil.sendHttpPostJson(url, requestJsonStr);
         BufferManager.addBufferByKey(responce, requestObject);

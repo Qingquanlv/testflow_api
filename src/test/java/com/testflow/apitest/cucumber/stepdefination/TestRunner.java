@@ -1,5 +1,6 @@
 package com.testflow.apitest.cucumber.stepdefination;
 
+import com.testflow.apitest.TestFlowManager;
 import com.testflow.apitest.business.BufferManager;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
@@ -14,11 +15,13 @@ import cucumber.api.junit.Cucumber;
         tags = { "@" }, format = {"pretty", "html:target/cucumber", "json:target/cucumber.json" })
 
 public class TestRunner {
+    public static TestFlowManager.Runner runner;
 
     @Before
     public void beforeScenario(final Scenario scenario) {
-
+        runner = new TestFlowManager.Runner();
         System.out.println(String.format("Start test the Scenario: %s.\n", scenario.getName()));
+
         BufferManager.initBufferMap();
     }
 
