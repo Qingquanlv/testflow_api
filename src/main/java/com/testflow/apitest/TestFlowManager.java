@@ -1,10 +1,12 @@
 package com.testflow.apitest;
 
 import com.testflow.apitest.business.BufferManager;
+import com.testflow.apitest.parser.DataParser;
 import com.testflow.apitest.stepdefinations.Buffer;
 import com.testflow.apitest.stepdefinations.Parser;
 import com.testflow.apitest.stepdefinations.Request;
 import com.testflow.apitest.stepdefinations.Verify;
+import com.testflow.apitest.utilities.FastJsonUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -79,6 +81,23 @@ import java.util.Map;
              }
              return this;
          }
+
+         /**
+          * 转化方法
+          *
+          */
+         public Runner parse(String sourceKey, String targetKey, DataParser dataParser) {
+             try {
+                 BufferManager.addBufferByKey(targetKey,
+                         dataParser.parse(FastJsonUtil.jsonToBean(BufferManager.getBufferByKey(sourceKey).toString(),
+                                 Class.forName(sourceKey))));
+             }
+             catch (Exception ex) {
+                 System.out.println(String.format("Parse object failed"));
+             }
+             return this;
+         }
+
 
          /**
           * 获取缓存
