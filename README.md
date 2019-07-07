@@ -3,7 +3,7 @@
 
 目前随着测试场景的复杂性和测试数据的多样性，仅仅通过发送请求对比固定返回值的方式已经很难满足现有接口测试需求。所以这个时候你需要testflow_API。
 
-## introduction
+## introduction：
 
 testflow_API的优势：
 
@@ -37,8 +37,8 @@ Scenario: Query weather
 #### 3. 上下文功能
 每个步骤执行后都会把执行结果转化为JSON格式存入缓存，后续步骤使用key查询缓存，也可通过xpath匹配缓存JSON中具体字段的值。
 
-缓存中获取的key值${weather1:/HeWeather6/*[0]/basic/location}：
 ```java
+//缓存中获取的key值${weather1:/HeWeather6/*[0]/basic/location}
 new TestFlowManager.Runner().sendRequest("",
                 "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01",
                 "weather1").sendRequest("",
@@ -79,7 +79,7 @@ verify("weather1","weather2",
                 ""); //对比List实体的主键
 ```
 
-##  Document
+##  Document：
 
 接入步骤
 1.maven pom导入
@@ -91,7 +91,7 @@ verify("weather1","weather2",
 
 
 
-##  PS
+##  PS：
 1. 目前发送请求只支持Json格式。
 2. 目前缓存只采用Json String的格式存储。
 3. 目前针对大型系统的接口测试，一般采用自动化测试代码动态计算与预期值的方式。使用testflow_api可以迅速支持落地，进行测试。
