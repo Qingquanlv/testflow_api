@@ -8,6 +8,7 @@
 testflow_API的优势：
 
 **1. 易用性**
+
 一行代码搞定接口测试：
 
 ```java
@@ -19,6 +20,7 @@ new TestFlowManager.Runner().sendRequest("",
 ```
 
 **2. 可读性**
+
 关键字根据具体动作进行封装，无缝连接Cucumber（Cucumber接入方式见test下的例子）
 
 junit模式：
@@ -35,6 +37,7 @@ Scenario: Query weather
 ```
 
 **3. 上下文功能**
+
 每个步骤执行后都会把执行结果转化为JSON格式存入缓存，后续步骤使用key查询缓存，也可通过xpath匹配缓存JSON中具体字段的值。
 
 缓存中获取的key值${weather1:/HeWeather6/*[0]/basic/location}：
@@ -49,6 +52,7 @@ new TestFlowManager.Runner().sendRequest("",
 ```
 
 **4. Parse方法**
+
 使用parse方法可以承接缓存中的数据进行处理，然后存入缓存供后续步骤使用。parse方式主要用于计算预期结果值。
 
 子类重写的方式：
