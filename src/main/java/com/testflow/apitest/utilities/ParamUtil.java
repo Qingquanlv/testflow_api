@@ -10,8 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -106,7 +105,7 @@ public class ParamUtil {
      * @param mapKey : 匹配的xpath字符串
      * @return String ：返回匹配后的Json串
      */
-    private static String getMapValFromJson(String jsonStr, String mapKey)
+    public static String getMapValFromJson(String jsonStr, String mapKey)
     {
         ZsonResult zr = ZSON.parseJson(jsonStr);
         zr.getClassTypes();
@@ -143,7 +142,7 @@ public class ParamUtil {
      */
     private static Method getValueViaGetMet(String fieldSetName, Object obj) {
         fieldSetName = parGetName(fieldSetName);
-        Method[] methods = ServiceAccess.getDeclaredMethod(obj);
+        Method[] methods = ServiceAccess.reflectDeclaredMethod(obj);
         Method fieldSetMet = getGetMet(methods, fieldSetName);
         return fieldSetMet;
     }
@@ -198,4 +197,22 @@ public class ParamUtil {
             value = ma.group(1);
         return value;
     }
+
+    public static Map<String, List<String>> parseVerifyParam(String val)
+    {
+        Map<String, List<String>> map = new HashMap<>();
+        val = val.replaceAll("\\s*", "");
+        //获取字符串中所有参数
+        String[] keyArray = val.split("\\}\\,");
+        if (!"".equals(keyArray[0])) {
+            for (String key : keyArray) {
+                String[] mapKeyArray = key.split("\\:\\{");
+                String[] mapItemArray = mapKeyArray[1].replace("}", "").split("\\,");
+                ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(mapItemArray));
+                map.put(mapKeyArray[0], arrayList);
+            }
+        }
+        return map;
+    }
+
 }

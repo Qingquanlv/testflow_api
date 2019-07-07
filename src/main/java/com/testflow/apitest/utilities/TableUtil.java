@@ -95,8 +95,8 @@ public class TableUtil {
         }
         Class<?> cls = bean.getClass();
         // 取出bean里的所有方法和属性
-        Method[] methods = ServiceAccess.getDeclaredMethod(bean);
-        Field[] fields = ServiceAccess.getDeclaredFields(bean);
+        Method[] methods = ServiceAccess.reflectDeclaredMethod(bean);
+        Field[] fields = ServiceAccess.reflectDeclaredFields(bean);
 
         for (Field field : fields) {
             try {
@@ -133,7 +133,7 @@ public class TableUtil {
     private static String getReqObj(Object obj, String fieldName) {
         String listItemType = "";
         fieldName = parGetName(fieldName);
-        Method method = ServiceAccess.getObjMethod(obj, fieldName);
+        Method method = ServiceAccess.reflectMethod(obj, fieldName);
         if (method != null && !"".equals(method.getGenericReturnType())) {
             listItemType = method.getGenericReturnType().getTypeName();
         }
@@ -141,7 +141,7 @@ public class TableUtil {
     }
 
     private static Object createReqObj(String objectName) {
-        Object obj = new Object();
+        Object obj;
         if (isObjectList(objectName)) {
             obj = ServiceAccess.createObject(objectName.substring(0, objectName.indexOf("[")));
         }

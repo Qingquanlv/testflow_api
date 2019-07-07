@@ -12,6 +12,7 @@ import java.util.*;
 public class VerifyUtil {
     private static Logger logger = LoggerFactory.getLogger(VerifyUtil.class);
     private StringBuffer errorMsg = new StringBuffer();
+    private Stack<String> index = new Stack<>();
 
     /**
      * 获取对比错误信息
@@ -37,32 +38,6 @@ public class VerifyUtil {
     }
 
     /**
-     * 对比两个实体，传递对应List的pk map，不传无需item map
-     *
-     * @param expObj 预期实体
-     * @param atlObj 实际实体
-     * @return 返回 ErrorMsg
-     */
-    public void compareEntityWithPkMap(Object expObj, Object atlObj, Map<String, List<String>> pkMap)
-    {
-        Map<String, List<String>> noCompareItemMap = new HashMap<>();
-        compareEntity(expObj,atlObj, pkMap, noCompareItemMap);
-    }
-
-    /**
-     * 对比两个实体，不传递对应List的pk map，传递无需item map
-     *
-     * @param expObj 预期实体
-     * @param atlObj 实际实体
-     * @return 返回 ErrorMsg
-     */
-    public void compareEntityWithNoComparedItemMap(Object expObj, Object atlObj, Map<String, List<String>> noCompareItemMap)
-    {
-        Map<String, List<String>> pkMap = new HashMap<>();
-        compareEntity(expObj,atlObj, pkMap, noCompareItemMap);
-    }
-
-    /**
      * 对比两个实体，实体中含有List，主键只能为值类型
      *
      * @param expObj 预期实体
@@ -72,7 +47,7 @@ public class VerifyUtil {
      */
     public void compareEntity(Object expObj, Object atlObj, Map<String, List<String>> pkMap, Map<String, List<String>> noCompareItemMap)
     {
-        logger.info(String.format("Start to compare object. Expected: \"%s\", Actual \"%s\".", expObj, atlObj));
+        //logger.info(String.format("Start to compare object %s. Expected: \"%s\", Actual \"%s\".", index, expObj, atlObj));
         if (isList(expObj) && isList(atlObj))
         {
             List<Object> expObjList = new ArrayList<>();
@@ -83,9 +58,10 @@ public class VerifyUtil {
             }
             catch (Exception ex)
             {
-                logger.info(String.format("Convert data \"%s\", \"%s\" to list failed", expObj.toString(), atlObj.toString()) + ex);
+                //logger.error(String.format("Parse data \"%s\", \"%s\" to list failed", expObj.toString(), atlObj.toString()) + ex);
+                errorMsg.append(String.format("Parse data \"%s\", \"%s\" to list failed.\n", expObj.toString(), atlObj.toString()) + ex);
             }
-            logger.info(String.format("Start to compare object.  Expected: \"%s\", Actual \"%s\".", expObjList, atlObjList));
+            //logger.info(String.format("Start to compare List %s. Expected: \"%s\", Actual \"%s\".", index, expObjList, atlObjList));
             compareList(expObjList, atlObjList, pkMap, noCompareItemMap);
         }
         else
@@ -93,28 +69,28 @@ public class VerifyUtil {
             //取出bean里的不对比的属性
             List<String> noCompareItemList = noCompareItemMap.get(expObj.getClass().getSimpleName());
             //取出bean里的所有方法和属性
-            Field[] fields = ServiceAccess.getDeclaredFields(atlObj);
+            Field[] fields = ServiceAccess.reflectDeclaredFields(atlObj);
             for (Field f : fields) {
-                {
-                    //根据属性名判断，有关属性不进行匹配
-                    if (noCompareItemList !=null && noCompareItemList.contains(f.getName())){
-                        continue;
-                    }
-                    Method fieldSetMet = getValueViaGetMet(f, atlObj);
-                    Object cAtlObj = ServiceAccess.execMethod(atlObj, fieldSetMet);
-                    Object cExpObj = ServiceAccess.execMethod(expObj, fieldSetMet);
-                    logger.info(String.format("Start to compare field \"%s\".  Expected: \"%s\", Actual \"%s\".", f, expObj, atlObj));
-                    if(!equals(cExpObj, cAtlObj, pkMap, noCompareItemMap)) {
-                        logger.info(String.format("Expected obj \"%s\" is not equal with actual obj \"%s\" field \"%s\".", cExpObj, cAtlObj, f.getName()));
-                        errorMsg.append(String.format("Compare field \"%s\" failed: expected value: \"%s\", actual value: \"%s\".\n", f, f.getName(), cExpObj, cAtlObj));
-                    }
-                    else
-                    {
-                        logger.info(String.format("Expected obj \"%s\" is equal with actual obj \"%s\" field \"%s\".\n", cExpObj, cAtlObj, f.getName()));
-                    }
+                //根据属性名判断，有关属性不进行匹配
+                if (noCompareItemList !=null && noCompareItemList.contains(f.getName())){
+                    continue;
                 }
+                Method fieldSetMet = getValueViaGetMet(f, atlObj);
+                Object cAtlObj = ServiceAccess.execMethod(atlObj, fieldSetMet);
+                Object cExpObj = ServiceAccess.execMethod(expObj, fieldSetMet);
+                index.push(f.getName());
+                //logger.info(String.format("Start to compare field \"%s\".  Expected: \"%s\", Actual \"%s\".", index, expObj, atlObj));
+                if(!equals(cExpObj, cAtlObj, pkMap, noCompareItemMap)) {
+                    //logger.error(String.format("Index: %s expected: \"%s\" not equals with actual: \"%s\".", index, cExpObj, cAtlObj));
+                    errorMsg.append(String.format("Index: %s expected: \"%s\" not equals with actual: \"%s\".\n", index, cExpObj, cAtlObj));
+                }
+                else {
+                    //logger.info(String.format("Index: %s expected: \"%s\" not equals with actual: \"%s\".", index, cExpObj, cAtlObj));
+                }
+                index.pop();
             }
         }
+
     }
 
     /**
@@ -130,8 +106,8 @@ public class VerifyUtil {
         List<Object> objListCompared = new ArrayList<>();
         //如果两个List长度不相等，返回error message
         if (expObjList.size() != atlObjList.size()) {
-            logger.info(String.format("List length not mathched. Expected: \"%d\", Actual \"%d\" Expected List: \"%s\", Actual List \"%s\".\n", expObjList.size(), atlObjList.size(), expObjList, atlObjList));
-            errorMsg.append(String.format("List length not mathched. Expected: \"%d\", Actual \"%d\" Expected List: \"%s\", Actual List \"%s\".\n", expObjList.size(), atlObjList.size(), expObjList, atlObjList));
+            //logger.error(String.format("List %s length not mathched. Expected: \"%d\", Actual \"%d\" Expected List: \"%s\", Actual List \"%s\".", index, expObjList.size(), atlObjList.size(), expObjList, atlObjList));
+            errorMsg.append(String.format("List %s length not mathched. Expected: \"%d\", Actual \"%d\" Expected List: \"%s\", Actual List \"%s\".\n", index, expObjList.size(), atlObjList.size(), expObjList, atlObjList));
         }
         //循环遍历exp List
         for (Object expObjItem : expObjList) {
@@ -143,12 +119,13 @@ public class VerifyUtil {
                 List<Field> primaryFields = ServiceAccess.getPrimaryFields(expObjItem, pkList);
                 if (primaryFields.size() > 0) {
                     //根据实体主键对比实体，如果不相等则continue
-                    if ( !compareObjWithSpecificCol(expObjItem, atlObjItem, primaryFields)) {
+                    if (!compareObjWithSpecificCol(expObjItem, atlObjItem, primaryFields)) {
                         i++;
                         continue;
                     }
+                    index.push(expObjItem.getClass().getSimpleName() + "[" + i + "]");
                     //获取当前对比实体的所有属性
-                    Field[] fs = ServiceAccess.getDeclaredFields(atlObjItem);
+                    Field[] fs = ServiceAccess.reflectDeclaredFields(atlObjItem);
                     for (Field f : fs) {
                         //根据属性名判断，有关属性不进行匹配
                         if (noCompareItemList != null && noCompareItemList.contains(f.getName())){
@@ -157,16 +134,19 @@ public class VerifyUtil {
                         Method fieldSetMet = getValueViaGetMet(f, atlObjItem);
                         Object atlObj = ServiceAccess.execMethod(atlObjItem, fieldSetMet);
                         Object expObj = ServiceAccess.execMethod(expObjItem, fieldSetMet);
-                        logger.info(String.format("Start to compare field \"%s\".  Expected: \"%s\", Actual \"%s\".", f.getName(), expObj, atlObj));
+                        index.push(f.getName());
+                        //logger.info(String.format("Start to compare field %s. Expected: \"%s\", Actual \"%s\".", index, expObj, atlObj));
                         if(!equals(expObj, atlObj, pkMap, noCompareItemMap)) {
-                            logger.info(String.format("Expected obj: \"%s\" is not equal with actual obj \"%s\".\n", expObj, atlObj));
-                            errorMsg.append(String.format("Compare field \"%s\" with entity \"%s\" failed expect value: \"%s\", actual value: \"%s\".\n", f.getName(), expObjItem, expObj, atlObj));
+                            //logger.error(String.format("Index: %s expected: \"%s\" not equals with actual: \"%s\".", index, expObj, atlObj));
+                            errorMsg.append(String.format("Index: %s expected: \"%s\" not equals with actual: \"%s\".\n", index, expObj, atlObj));
                         }
                         else
                         {
-                            logger.info(String.format("Expected obj: \"%s\" is equal with actual obj \"%s\".\n", expObj, atlObj));
+                            //logger.info(String.format("Index: %s expected obj: \"%s\" equals with actual obj \"%s\".", index, expObj, atlObj));
                         }
+                        index.pop();
                     }
+                    index.pop();
                     //对比过的实体添加到List中
                     objListCompared.add(atlObjItem);
                     break;
@@ -207,7 +187,7 @@ public class VerifyUtil {
         boolean ret = true;
         for (Field field : fields)
         {
-            if(!ConversionUtil.DBValEquals(ServiceAccess.GetFieldValueInObj(obj1, field), ServiceAccess.GetFieldValueInObj(obj2, field)))
+            if(!ConversionUtil.DBValEquals(ServiceAccess.reflectField(obj1, field), ServiceAccess.reflectField(obj2, field)))
             {
                 ret = false;
             }
@@ -239,7 +219,7 @@ public class VerifyUtil {
      */
     private Method getValueViaGetMet(Field field, Object obj) {
         String fieldSetName = parGetName(field.getName());
-        Method[] methods = ServiceAccess.getDeclaredMethod(obj);
+        Method[] methods = ServiceAccess.reflectDeclaredMethod(obj);
         Method fieldSetMet = getGetMet(methods, fieldSetName);
         return fieldSetMet;
     }
@@ -260,7 +240,7 @@ public class VerifyUtil {
         }
         if (tarMet == null)
         {
-            logger.info(String.format("Get method \"%s\" fieldGetMet failed, please check if method \"%s\" is exist.", fieldGetMet, fieldGetMet));
+            //logger.info(String.format("Get method \"%s\" fieldGetMet failed, please check if method \"%s\" is exist.", fieldGetMet, fieldGetMet));
         }
         return tarMet;
     }

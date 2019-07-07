@@ -9,12 +9,12 @@ import java.util.Map;
  * @date 2019/6/2
  */
 public class BufferManager {
-    private static Map<String, Object> requestObjectBufferMap;
+    private static Map<String, String> requestObjectBufferMap;
 
     public static void initBufferMap()
     {
         if(requestObjectBufferMap == null) {
-            requestObjectBufferMap = new HashMap<String, Object>();
+            requestObjectBufferMap = new HashMap<String, String>();
         }
     }
 
@@ -22,11 +22,11 @@ public class BufferManager {
         requestObjectBufferMap.clear();
     }
 
-    public static Object getBufferByKey(String bufferKey) {
+    public static String getBufferByKey(String bufferKey) {
         return requestObjectBufferMap.get(bufferKey);
     }
 
-    public static void addBufferByKey(String bufferKey, Object bufferObject) {
+    public static void addBufferByKey(String bufferKey, String bufferObject) {
         if(!bufferExist(bufferKey)) {
             requestObjectBufferMap.put(bufferKey, bufferObject);
         }
