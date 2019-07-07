@@ -14,57 +14,45 @@ public class Parser {
      * 根据Buffer中保存的实体，构建实体Json
      *
      */
-    public void convertSourceToTarget(String convertFileName, String convertFileSource, String convertMethodName, Object sourceData, Class<?> sourceDataParamType, Class<?> targetDataParamType)
+    public void parseValueViaFile(String convertFileName, String convertMethodName, String sourceData, String sourceDataParamType, String targetDataParamType)
     {
-        Object targetObj = new Object();
-        //初始化JavaCompliler(生成文件)
-        JavaStringCompiler compiler = new JavaStringCompiler();
-        //获取需要转化的类名和函数名
-        String className = Constants.SERVICES_PATH + convertFileName + ".jar";
+        String targetJson = "";
         try {
-            Map<String, byte[]> results = compiler.compile(className, convertFileSource);
-            Class<?> clazz = compiler.loadClass(className, results);
-            Method fieldGetMet =  ServiceAccess.getObjMethod(clazz, convertMethodName, sourceDataParamType, targetDataParamType);
-            targetObj = fieldGetMet.invoke(clazz.newInstance(), sourceData);
+            Class<?> clazz = ServiceAccess.reflectClazz(convertFileName);
+            Class<?> sourceDataParamTypeClazz = ServiceAccess.reflectClazz(sourceDataParamType);
+            Object sourceParame = FastJsonUtil.toBean(BufferManager.getBufferByKey(sourceData), sourceDataParamTypeClazz);
+            Method fieldGetMet =  ServiceAccess.reflectMethod(clazz, convertMethodName, sourceDataParamTypeClazz);
+            targetJson = FastJsonUtil.toJson(fieldGetMet.invoke(clazz.newInstance(), sourceParame));
         } catch (Exception e) {
             System.out.println("执行Convert方法错误" + e);
         }
-        BufferManager.addBufferByKey(targetDataParamType.toString(), targetObj);
+        BufferManager.addBufferByKey(targetDataParamType, targetJson);
     }
 
     /**
      * 根据Buffer中保存的实体，构建实体Json
      *
      */
-    public void parseValue(String convertFileSource, String convertMethodName, Object sourceData, Class<?> sourceDataParamType, Class<?> targetDataParamType)
+    public void parseValueVidStr(String convertMethodSource, String convertMethodName, String sourceData, String sourceDataParamType, String targetDataParamType)
     {
-        Object targetObj = new Object();
+        String targetJson = "";
         //初始化JavaCompliler(生成文件)
         JavaStringCompiler compiler = new JavaStringCompiler();
         //获取需要转化的类名和函数名
-        String className = Constants.SERVICES_PATH + Constants.PARSE_VALUE_FILE_NAME;
+        String className = Constants.PARSE_VALUE_FILE_NAME;
         try {
+            Class<?> sourceDataParamTypeClazz = ServiceAccess.reflectClazz(sourceDataParamType);
+            Object sourceParame = FastJsonUtil.toBean(BufferManager.getBufferByKey(sourceData), sourceDataParamTypeClazz);
+            String convertFileSource = Constants.PARSE_VALUE_FILE_SOURCE.replace(Constants.PARAMTYPE1, sourceDataParamType)
+                    .replace(Constants.PARAMTYPE2, targetDataParamType)
+                    .replace(Constants.METHOD, convertMethodSource);
             Map<String, byte[]> results = compiler.compile(className, convertFileSource);
-            Class<?> clazz = compiler.loadClass(className, results);
-            Method fieldGetMet =  ServiceAccess.getObjMethod(clazz, convertMethodName, sourceDataParamType, targetDataParamType);
-            targetObj = fieldGetMet.invoke(clazz.newInstance(), sourceData);
+            Class<?> clazz = compiler.loadClass(Constants.SERVICES_CLASS_PATH, results);
+            Method fieldGetMet =  ServiceAccess.reflectMethod(clazz, convertMethodName, sourceDataParamTypeClazz);
+            targetJson = FastJsonUtil.toJson(fieldGetMet.invoke(clazz.newInstance(), sourceParame));
         } catch (Exception e) {
             System.out.println("执行Convert方法错误" + e);
         }
-        BufferManager.addBufferByKey(targetDataParamType.toString(), targetObj);
-    }
-
-    /**
-     * 根据转化参数类型，转换实体
-     *
-     */
-    private Object getBufferViaKey(String sourceDataType, String sourceDataParamType, String sourceData) {
-        Object sourceBean = BufferManager.getBufferByKey(sourceData);
-        try {
-            sourceBean = FastJsonUtil.jsonToBean(sourceBean.toString(), sourceBean);
-        } catch (Exception ex) {
-            System.out.println("Convert Data List To Entity List Failed" + ex);
-        }
-        return sourceBean;
+        BufferManager.addBufferByKey(targetDataParamType, targetJson);
     }
 }
