@@ -19,7 +19,7 @@ new TestFlowManager.Runner().sendRequest("",
 ```
 
 #### 2. 可读性
-关键字根据具体动作进行封装，无缝连接Cucumber（Cucumber接入方式见test下的例子）
+方法根据具体执行动作进行封装，无缝连接Cucumber（Cucumber接入方式见test下的例子）
 
 junit模式：
 ```java
