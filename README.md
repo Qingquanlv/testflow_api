@@ -18,7 +18,7 @@ new TestFlowManager.Runner().sendRequest("",
                         "Beijing");
 ```
 
-####2. 可读性
+#### 2. 可读性
 关键字根据具体动作进行封装，无缝连接Cucumber（Cucumber接入方式见test下的例子）
 
 junit模式：
@@ -34,7 +34,7 @@ Scenario: Query weather
     When I send JSON request "" to url "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01" get "weather"
 ```
 
-####3. 上下文功能
+#### 3. 上下文功能
 每个步骤执行后都会把执行结果转化为JSON格式存入缓存，后续步骤使用key查询缓存，也可通过xpath匹配缓存JSON中具体字段的值。
 
 缓存中获取的key值${weather1:/HeWeather6/*[0]/basic/location}：
@@ -48,7 +48,7 @@ new TestFlowManager.Runner().sendRequest("",
                         "Beijing");
 ```
 
-####4. Parse方法
+#### 4. Parse方法
 使用parse方法可以承接缓存中的数据进行处理，然后存入缓存供后续步骤使用。parse方式主要用于计算预期结果值。
 
 子类重写的方式：
@@ -57,7 +57,7 @@ new TestFlowManager.Runner().sendRequest("",
 
 插入String格式代码片：
 
-####5. 多样的对比方法
+#### 5. 多样的对比方法
 
 对比实体中的任意key值：
 ```java
