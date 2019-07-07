@@ -37,5 +37,4 @@ public class Request {
         String requestObject = HttpClientUtil.sendHttpPostJson(url, requestJsonStr);
         BufferManager.addBufferByKey(responce, requestObject);
     }
-
 }
