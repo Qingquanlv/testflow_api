@@ -7,12 +7,13 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ServiceAccess {
 
     private static Logger logger = LoggerFactory.getLogger(ServiceAccess.class);
-//反射字节码
+    //反射字节码
 
     /**
      * 根据类名获取类字节码
@@ -25,8 +26,8 @@ public class ServiceAccess {
         try {
             clazz = Class.forName(objectName);
         }
-        catch (Exception e) {
-            logger.debug(String.format("Init object: create class \"%s\" failed.", objectName) + e);
+        catch (Exception ex) {
+            logger.warn(String.format("Reflect object: create class \"%s\" failed. ", objectName) + ex);
         }
         return clazz;
     }
@@ -45,50 +46,26 @@ public class ServiceAccess {
             Class<?> clazz = Class.forName(objectName);
             targerObj = clazz.newInstance();
         }
-        catch (Exception e) {
-            logger.debug(String.format("Init object: create object \"%s\" failed.", objectName) + e);
-        }
-        return targerObj;
-    }
-
-    /**
-     * 根据类名初始化只有一个参数的实例
-     *
-     * @param objectName : 反射类名
-     * @param param : 构造函数参数
-     * @return Object ：返回实例化实体
-     */
-    public static Object createObject(String objectName, String param)  {
-        Object targerObj = null;
-        try {
-            Class<?> clazz = Class.forName(objectName);
-            Constructor cons = clazz.getDeclaredConstructor(String.class);
-            cons.setAccessible(true);
-            // 为构造方法传递参数
-            targerObj = cons.newInstance(param);
-        }
-        catch (Exception e) {
-            logger.warn(String.format("Init object: create object \"%s\" with \"%s\" failed.", objectName, param) + e);
+        catch (Exception ex) {
+            logger.warn(String.format("Reflect object: create object \"%s\" failed.", objectName) + ex);
         }
         return targerObj;
     }
 
     //反射方法
-
-
     /**
      * 根据类实例获取所有方法名
      *
      * @param bean : 类实例
      * @return Method : 方法字节码集合
      */
-    public static Method[] getDeclaredMethod(Object bean)  {
+    public static Method[] reflectDeclaredMethod(Object bean)  {
         Method[] methods = null;
         try {
             methods = bean.getClass().getDeclaredMethods();
         }
-        catch (Exception e) {
-            logger.warn(String.format("Init object: Get object \"%s\" declared methods \"%s\" failed.", bean) + e);
+        catch (Exception ex) {
+            logger.warn(String.format("Reflect object: Get object \"%s\" declared methods \"%s\" failed.", bean) + ex);
         }
         return methods;
     }
@@ -100,14 +77,14 @@ public class ServiceAccess {
      * @param methodName : 要反射的类方法
      * @return Method : 方法字节码
      */
-    public static Method getObjMethod(Object bean, String methodName)  {
+    public static Method reflectMethod(Object bean, String methodName)  {
         Class<?> clazz = bean.getClass();
         Method method = null;
         try {
             method = clazz.getMethod(methodName);
         }
         catch (Exception e) {
-            logger.warn(String.format("Init object: Get object \"%s\" method \"%s\" failed.", bean, methodName) + e);
+            logger.warn(String.format("Reflect object: Get object \"%s\" method \"%s\" failed.", bean, methodName) + e);
         }
         return method;
     }
@@ -132,6 +109,24 @@ public class ServiceAccess {
     }
 
     /**
+     * 根据类实例和方法名和方法的一个形参，获取方法
+     *
+     * @param clazz : 类
+     * @param methodName : 要反射的类方法
+     * @return Method : 方法字节码
+     */
+    public static Method reflectMethod(Class<?> clazz, String methodName, Class<?> firstParamType)  {
+        Method method = null;
+        try {
+            method = clazz.getMethod(methodName, firstParamType);
+        }
+        catch (Exception ex) {
+            logger.warn(String.format("Init object: relect method %s in object %s failed.", method, clazz) + ex);
+        }
+        return method;
+    }
+
+    /**
      * 根据类实例和方法名和方法的两个形参，获取方法
      *
      * @param bean : 类实例
@@ -145,7 +140,7 @@ public class ServiceAccess {
             method = clazz.getMethod(methodName, firstParamType, secondParamType);
         }
         catch (Exception ex) {
-            logger.warn(String.format("Get object %s method %s failed.", bean, method) + ex);
+            logger.warn(String.format("Init object: Get object %s method %s failed.", bean, method) + ex);
         }
         return method;
     }
@@ -164,7 +159,7 @@ public class ServiceAccess {
             method = clazz.getMethod(methodName, firstParam.getClass(), secondParam.getClass(), thirdParam.getClass(), fourthParam.getClass());
         }
         catch (Exception ex) {
-            logger.warn(String.format("Get object %s method %s failed.", bean, method) + ex);
+            logger.warn(String.format("Init object: Get object %s method %s failed.", bean, method) + ex);
         }
         return method;
     }
@@ -181,9 +176,8 @@ public class ServiceAccess {
         try {
             v = method.invoke(bean);
         }
-        catch (Exception ex)
-        {
-            logger.warn(String.format("Exec object %s method %s  failed.", bean, method) + ex);
+        catch (Exception ex) {
+            logger.warn(String.format("%s: Execute method \"%s\" in object \"%s\" failed. ", new Date(), method, bean) + ex);
         }
         return v;
     }
@@ -196,7 +190,7 @@ public class ServiceAccess {
      * @param bean : 类实例
      * @return Field[] : 返回所有属性
      */
-    public static Field[] getDeclaredFields(Object bean)  {
+    public static Field[] reflectDeclaredFields(Object bean)  {
         Class<?> cls = bean.getClass();
         Field[] fields = null;
         try {
@@ -204,7 +198,7 @@ public class ServiceAccess {
             fields = cls.getDeclaredFields();
         }
         catch (Exception e) {
-            logger.warn(String.format("Get Declared Fields failed.", bean) + e);
+            logger.warn(String.format("%s: Get Declared Fields failed.", bean) + e);
         }
         return fields;
     }
@@ -217,7 +211,7 @@ public class ServiceAccess {
      * @param bean : 类实例
      * @return Object : 返回相应属性值
      */
-    public static Object GetFieldValueInObj(Object bean, Field fieldName) {
+    public static Object reflectField(Object bean, Field fieldName) {
         Object mBean = null;
         try {
             //设置访问性，反射类的方法，设置为true就可以访问private修饰的东西，否则无法访问
@@ -241,7 +235,7 @@ public class ServiceAccess {
         String fieldListStr = null;
         for (Field field : fieldName)
         {
-            String fieldItemStr = GetFieldValueInObj(bean, field).toString();
+            String fieldItemStr = reflectField(bean, field).toString();
             fieldListStr += String.format(", \"%s\"", fieldItemStr);
         }
         return fieldListStr;
