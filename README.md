@@ -1,7 +1,7 @@
 # testflow_api
 
 
-目前随着测试场景的复杂性和测试数据的多样性，仅仅通过发送请求对比固定返回值的方式已经很难满足现有接口测试需求。所以这个时候你需要testflow_API。
+目前随着测试场景的复杂性和测试数据的多样性，仅仅通过发送Request对比固定Responce的方式已经很难满足现有接口测试需求。所以这个时候你需要testflow_API。
 
 ## introduction：
 
@@ -84,9 +84,17 @@ verify("weather1","weather2",
 接入步骤
 1.maven pom导入
 
+pom包路径
+
 2.Junit模式/Cucumber模式
+Junit：
+Cucumber：
 
 3.开放方法
+Requset：
+Paser：
+Verify：
+Buffer：
 
 
 
