@@ -45,7 +45,7 @@ public class HttpClientUtil {
 
     static {
         try {
-            System.out.println("初始化HttpClientTest~~~开始");
+            //System.out.println("初始化HttpClientTest~~~开始");
             SSLContextBuilder builder = new SSLContextBuilder();
             builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
             SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
