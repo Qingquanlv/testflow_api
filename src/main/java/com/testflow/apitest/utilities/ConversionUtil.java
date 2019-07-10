@@ -4,8 +4,13 @@ import java.util.Date;
 
 public class ConversionUtil {
     public static boolean DBValEquals(Object obj1, Object obj2) {
-
-        if (obj1 instanceof Integer) {
+        if (obj1 == null && obj2 != null) {
+            return false;
+        } else if (obj1 != null && obj2 == null) {
+            return false;
+        } else if (obj1 == null && obj2 == null) {
+            return true;
+        } if (obj1 instanceof Integer) {
             int value1 = ((Integer) obj1).intValue();
             int value2 = ((Integer) obj2).intValue();
             return value1 == value2;
