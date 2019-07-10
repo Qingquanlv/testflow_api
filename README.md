@@ -49,7 +49,7 @@ new TestFlowManager.Runner().sendRequest("",
 ```
 
 #### 4. Parse方法
-使用parse方法可以对缓存中的数据进行更复杂的处理，支持处理后存入缓存。
+使用parse方法可以对缓存中的数据进行更复杂的处理，支持处理后存入缓存
 
 子类重写的方式：
 ```java
