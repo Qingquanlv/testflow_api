@@ -88,7 +88,8 @@ new TestFlowManager.Runner().sendRequest("",
 
 #### 5. 多样的对比方法
 
-对比实体中的任意key值：
+验证实体中任一字段值：
+
 ```java
 verify("weather2","/HeWeather6/*[0]/basic/location","Beijing");
 ```
@@ -112,7 +113,7 @@ verify("weather1", "weather2");
 ##  Document：
 
 ### 接入步骤
-maven pom导入
+
 
 
 
@@ -120,11 +121,11 @@ maven pom导入
 
 Junit：
 
-参考 com\testflow\apitest\normaltest\Example.java
+ com\testflow\apitest\normaltest\Example.java
 
 Cucumber：
 
-参考 com\testflow\apitest\cucumber\feature\test.feature
+ com\testflow\apitest\cucumber\feature\test.feature
 
 ### 开放方法
 
@@ -230,10 +231,31 @@ public Runner verify(String paramType, String expObj, String atlObj, String pkMa
 ```
 
 ##### Other：
+
+Xpath读取缓存实体字段的写法
+
 ```java
-//Xpath读取缓存实体字段的写法
-//Cucumber request模式，请求feature文件写法
-//相同类型实体，不对比字段和对比list主键的写法
+${缓存Key:JSON定位串}
+${weather1:/HeWeather6/*[0]/basic/location}
+```
+
+Cucumber request模式，请求feature文件写法
+
+```java
+And I send request "Root" to url "Url" get "targetParamKey" with
+      | Key                                           | Value   |
+      | Child1                                        | parame1 |
+      | Child2:GrandChild                             | parame2 |
+      | ListChild3:ListChild3Item[0]:GrandGrandChild1 | parame3 |
+      | ListChild3:ListChild3Item[1]:GrandGrandChild1 | parame4 |
+      | ListChild3:ListChild3Item[1]:GrandGrandChild2 | parame5 |
+```
+
+相同类型实体，不对比字段和对比list主键的写法
+
+```java
+类名1:{字段名1,字段名2},类名2:{字段名1,字段名2}
+Heweather6:{status}, Daily_forecast:{cond_code_d, cond_code_n}
 ```
 
 
