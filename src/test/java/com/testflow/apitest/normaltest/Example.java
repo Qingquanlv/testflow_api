@@ -14,8 +14,8 @@ public class Example {
                 "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01",
                 "weather"
         ).verify("weather",
-                        "/HeWeather6/*[0]/basic/location", //Xpath配置Json，验证节点的值
-                        "南京");
+                "/HeWeather6/*[0]/basic/location", //Xpath配置Json，验证节点的值
+                "南京");
     }
 
     //发送请求后，验证对比返回Json String
@@ -55,13 +55,13 @@ public class Example {
         ).overrideParse("com.testflow.apitest.testentity.JsonsRootBean",
                 "weather1",
                 "weather2", new DataParser<JsonsRootBean, JsonsRootBean>() {
-            @Override
-            public JsonsRootBean parse(JsonsRootBean sourceData) {
-                JsonsRootBean tar = new JsonsRootBean();
-                tar.setHeweather6(sourceData.getHeweather6());
-                return tar;
-            }
-        }).verify("com.testflow.apitest.testentity.JsonsRootBean",
+                    @Override
+                    public JsonsRootBean parse(JsonsRootBean sourceData) {
+                        JsonsRootBean tar = new JsonsRootBean();
+                        tar.setHeweather6(sourceData.getHeweather6());
+                        return tar;
+                    }
+                }).verify("com.testflow.apitest.testentity.JsonsRootBean",
                 "weather1",
                 "weather2",
                 "Heweather6:{status}, Daily_forecast:{cond_code_d, cond_code_n}",
