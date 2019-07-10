@@ -229,6 +229,14 @@ public Runner verify(String paramType, String expObj, String atlObj, String pkMa
 public Runner verify(String paramType, String expObj, String atlObj, String pkMapStr, String noCompareItemMapStr)
 ```
 
+##### Other：
+```java
+//Xpath读取缓存实体字段的写法
+//Cucumber request模式，请求feature文件写法
+//相同类型实体，不对比字段和对比list主键的写法
+```
+
+
 ##  PS：
 1. 目前发送请求只支持Json格式。
 2. 目前缓存只采用Json String的格式存储。
