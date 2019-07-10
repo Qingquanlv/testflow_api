@@ -33,7 +33,7 @@ public class Parser {
      * 根据Buffer中保存的实体，构建实体Json
      *
      */
-    public void parseValueVidStr(String convertMethodSource, String convertMethodName, String sourceData, String sourceDataParamType, String targetDataParamType)
+    public void parseValueVidStr(String convertMethodSource, String convertMethodName, String sourceData, String sourceDataParamType, String targetParemKey, String targetDataParamType)
     {
         String targetJson = "";
         //初始化JavaCompliler(生成文件)
@@ -53,6 +53,6 @@ public class Parser {
         } catch (Exception e) {
             System.out.println("执行Convert方法错误" + e);
         }
-        BufferManager.addBufferByKey(targetDataParamType, targetJson);
+        BufferManager.addBufferByKey(targetParemKey, targetJson);
     }
 }
