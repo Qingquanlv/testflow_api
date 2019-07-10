@@ -234,15 +234,13 @@ public Runner verify(String paramType, String expObj, String atlObj, String pkMa
 
 ##### Other：
 
-Xpath读取缓存实体字段的写法
-
+##### Xpath读取缓存实体字段的写法
 ```java
 ${缓存Key:JSON定位串}
 ${weather1:/HeWeather6/*[0]/basic/location}
 ```
 
-Cucumber request模式，请求feature文件写法
-
+##### Cucumber request模式，请求feature文件写法
 ```java
 And I send request "Root" to url "Url" get "targetParamKey" with
       | Key                                           | Value   |
@@ -253,8 +251,7 @@ And I send request "Root" to url "Url" get "targetParamKey" with
       | ListChild3:ListChild3Item[1]:GrandGrandChild2 | parame5 |
 ```
 
-相同类型实体，不对比字段和对比list主键的写法
-
+##### 相同类型实体，不对比字段和对比list主键的写法
 ```java
 类名1:{字段名1,字段名2},类名2:{字段名1,字段名2}
 Heweather6:{status}, Daily_forecast:{cond_code_d, cond_code_n}
