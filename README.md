@@ -111,12 +111,12 @@ verify("weather1", "weather2");
 
 ##  Document：
 
-接入步骤
-1.maven pom导入
+### 接入步骤
+maven pom导入
 
-pom包路径
 
-2.Junit模式/Cucumber模式
+
+### Junit模式/Cucumber模式
 
 Junit：
 
@@ -126,9 +126,9 @@ Cucumber：
 
 参考 com\testflow\apitest\cucumber\feature\test.feature
 
-3.开放方法
+### 开放方法
 
-Requset：
+##### Requset：
 
 ```java
 /**
@@ -153,7 +153,7 @@ public Runner sendRequest(String requestJsonStr, String url, String responce)
 public Runner sendRequest(String requestJsonStr, String url, String responce) 
 ```
 
-Paser：
+##### Paser：
 
 ```java
 /**
@@ -194,7 +194,7 @@ public Runner overrideParse(String sourceParemType, String sourceParemKey, Strin
 public Runner sourceParse(String convertMethodSource, String convertMethodName, String sourceParemKey, String sourceParamType, String targetParemKey, String targetParamType)
 ```
 
-Verify：
+##### Verify：
 
 ```java
 /**
