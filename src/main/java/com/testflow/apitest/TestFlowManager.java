@@ -1,5 +1,3 @@
-package com.testflow.apitest;
-
 import com.testflow.apitest.business.BufferManager;
 import com.testflow.apitest.parser.DataParser;
 import com.testflow.apitest.servicesaccess.ServiceAccess;
@@ -51,10 +49,10 @@ public class TestFlowManager {
          * 转化方法(String参数)
          *
          */
-        public Runner parseS(String convertFileSource, String convertMethodName, String sourceData, String sourceDataParamType, String targetDataParamType) {
+        public Runner sourceParse(String convertFileSource, String convertMethodName, String sourceParemKey, String sourceParamType, String targetParemKey, String targetParamType) {
             Parser parser = new Parser();
             try {
-                parser.parseValueVidStr(convertFileSource, convertMethodName, sourceData, sourceDataParamType, targetDataParamType);
+                parser.parseValueVidStr(convertFileSource, convertMethodName, sourceParemKey, sourceParamType, targetParemKey, targetParamType);
             }
             catch (Exception ex) {
                 System.out.println(String.format("Init object failed"));
@@ -66,10 +64,10 @@ public class TestFlowManager {
          * 转化方法(java文件)
          *
          */
-        public Runner parseR(String convertFileName, String convertMethodName, String sourceData, String sourceDataParamType, String targetDataParamType) {
+        public Runner reflectParse(String convertFileName, String convertMethodName, String sourceParemKey, String sourceDataParamType, String targetParemKey) {
             Parser parser = new Parser();
             try {
-                parser.parseValueViaFile(convertFileName, convertMethodName, sourceData, sourceDataParamType, targetDataParamType);
+                parser.parseValueViaFile(convertFileName, convertMethodName, sourceParemKey, sourceDataParamType, targetParemKey);
             }
             catch (Exception ex) {
                 System.out.println(String.format("Init object failed" + ex));
@@ -81,14 +79,14 @@ public class TestFlowManager {
          * 转化方法（重写方式）
          *
          */
-        public Runner parseO(String sourceKey, String targetKey, DataParser dataParser) {
+        public Runner overrideParse(String sourceParemType, String sourceParemKey, String targeParemtKey, DataParser dataParser) {
             try {
-                BufferManager.addBufferByKey(targetKey,
-                        FastJsonUtil.toJson(dataParser.parse(FastJsonUtil.toBean(BufferManager.getBufferByKey(sourceKey),
-                                Class.forName(sourceKey)))));
+                BufferManager.addBufferByKey(targeParemtKey,
+                        FastJsonUtil.toJson(dataParser.parse(FastJsonUtil.toBean(BufferManager.getBufferByKey(sourceParemKey),
+                                ServiceAccess.reflectClazz(sourceParemType)))));
             }
             catch (Exception ex) {
-                System.out.println(String.format("Parse object \"%s\" failed: " + ex, targetKey));
+                System.out.println(String.format("Parse object \"%s\" failed: " + ex, targeParemtKey));
             }
             return this;
         }
@@ -109,7 +107,7 @@ public class TestFlowManager {
          */
         public Runner verify(String expObj, String atlObj) {
             if (!BufferManager.getBufferByKey(expObj).equals(BufferManager.getBufferByKey(atlObj))) {
-                Assert.fail("\n" + String.format("expected: \"%s\" not equals with actual: \"%s\".\n", expObj, atlObj));
+                Assert.fail("\n" + String.format("expected: \"%s\" not equals with actual: \"%s\".\n", BufferManager.getBufferByKey(expObj), BufferManager.getBufferByKey(atlObj)));
             }
             return this;
         }
@@ -140,3 +138,4 @@ public class TestFlowManager {
         }
     }
 }
+
