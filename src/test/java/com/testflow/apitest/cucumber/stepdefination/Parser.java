@@ -7,8 +7,8 @@ import static com.testflow.apitest.cucumber.stepdefination.TestRunner.runner;
 
 public class Parser {
 
-    @When("^I covert data from via file \"([^\"\"]*)\" soure \"([^\"\"]*)\" method \"([^\"\"]*)\" from data \"([^\"\"]*)\" to \"([^\"\"]*)\"$")
-    public void ICovertDataToWith(String convertFileName, String convertFileSource, String convertMethodName, String sourceData, String sourceDataParamType, String targetDataParamType) {
-        runner.parse(convertFileName, convertFileSource, convertMethodName, sourceData, sourceDataParamType, sourceDataParamType);
+    @When("^I parse data from via file \"([^\"\"]*)\" method \"([^\"\"]*)\" from \"([^\"\"]*)\" type \"([^\"\"]*)\" to \"([^\"\"]*)\"$")
+    public void ICovertDataToWith(String convertFileName, String convertMethod, String sourceKey, String sourceType, String targetKey) {
+        runner.reflectParse(convertFileName, convertMethod, sourceKey, sourceType, targetKey);
     }
 }
