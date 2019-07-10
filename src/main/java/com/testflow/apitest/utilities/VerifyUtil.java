@@ -47,7 +47,7 @@ public class VerifyUtil {
      */
     public void compareEntity(Object expObj, Object atlObj, Map<String, List<String>> pkMap, Map<String, List<String>> noCompareItemMap)
     {
-        //logger.info(String.format("Start to compare object %s. Expected: \"%s\", Actual \"%s\".", index, expObj, atlObj));
+        //logger.info(String.format("%s: Start to compare object %s. Expected: \"%s\", Actual \"%s\".", new Date(), index, expObj, atlObj));
         if (isList(expObj) && isList(atlObj))
         {
             List<Object> expObjList = new ArrayList<>();
@@ -221,6 +221,9 @@ public class VerifyUtil {
         String fieldSetName = parGetName(field.getName());
         Method[] methods = ServiceAccess.reflectDeclaredMethod(obj);
         Method fieldSetMet = getGetMet(methods, fieldSetName);
+        if (fieldSetMet == null) {
+            logger.warn(String.format("%s: Get field \"%s\" get method from object \"%s\" failed, please check if field name or method is exist.", new Date(), field, obj, field));
+        }
         return fieldSetMet;
     }
 
@@ -272,6 +275,7 @@ public class VerifyUtil {
      * @return boolean 是否相等
      */
     private boolean equals(Object obj1, Object obj2, Map<String, List<String>> pkMap, Map<String, List<String>> noCompareItemMap) {
+        logger.info(String.format("%s: Start to compare object %s, Expected: \"%s\", Actual \"%s\".", new Date(), index, obj1, obj2));
         if (obj1 == null && obj2 != null) {
             return false;
         } else if (obj1 != null && obj2 == null) {
