@@ -35,7 +35,7 @@ Scenario: Query weather
 ```
 
 #### 3. 上下文功能
-每个步骤执行后都会把执行结果转化为JSON格式存入缓存，后续步骤使用key查询缓存进行后续处理（支持通过Xpath获取缓存中JSON的key值）。
+每个步骤执行后都会把执行结果转化为JSON格式存入缓存，后续步骤使用key查询缓存进行后续处理（支持通过Xpath获取缓存中JSON特定字段值）。
 
 ```java
 //缓存中获取的key值${weather1:/HeWeather6/*[0]/basic/location}
