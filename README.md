@@ -23,13 +23,13 @@ new TestFlowManager.Runner().sendRequest("",
 #### 2. 可读性
 方法根据具体执行动作进行封装，无缝连接Cucumber（Cucumber接入方式见test下的例子）
 
-junit模式：
+##### junit模式：
 ```java
 new TestFlowManager.Runner().sendRequest("",
                 "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01",
                 "weather");
 ```
-Cucumber模式：
+##### Cucumber模式：
 ```ruby
 Scenario: Query weather
   #查询北京地区天气 
