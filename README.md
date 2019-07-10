@@ -3,7 +3,9 @@
 
 目前随着测试场景的复杂性和测试数据的多样性，仅仅通过发送Request对比固定Responce的方式已经很难满足现有接口测试需求。所以这个时候你需要testflow_API。
 
-## introduction：
+
+
+# introduction：
 
 testflow_API的优势：
 
@@ -21,13 +23,13 @@ new TestFlowManager.Runner().sendRequest("",
 #### 2. 可读性
 方法根据具体执行动作进行封装，无缝连接Cucumber（Cucumber接入方式见test下的例子）
 
-junit模式：
+##### junit模式：
 ```java
 new TestFlowManager.Runner().sendRequest("",
                 "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01",
                 "weather");
 ```
-Cucumber模式：
+##### Cucumber模式：
 ```ruby
 Scenario: Query weather
   #查询北京地区天气 
@@ -51,7 +53,7 @@ new TestFlowManager.Runner().sendRequest("",
 #### 4. Parse方法
 使用parse方法可以对缓存中的数据进行更复杂的处理，支持处理后存入缓存
 
-子类重写的方式：
+##### 子类重写的方式：
 ```java
 .overrideParse("com.testflow.apitest.testentity.JsonsRootBean",
                 "weather1",
@@ -65,7 +67,7 @@ new TestFlowManager.Runner().sendRequest("",
         })
 ```
 
-反射文件的方式：
+##### 反射文件的方式：
 ```java
 .reflectParse("com.testflow.apitest.normaltest.TestMethod",
                 "convertMethod",
@@ -75,7 +77,7 @@ new TestFlowManager.Runner().sendRequest("",
         )
 ```
 
-插入String格式代码片方式：
+##### 插入String格式代码片方式：
 ```java
 .sourceParse(javaFileSource,
                 "convertMethod",
@@ -88,18 +90,19 @@ new TestFlowManager.Runner().sendRequest("",
 
 #### 5. 多样的对比方法
 
-对比实体中的任意key值：
+##### 验证实体中任一字段值：
+
 ```java
 verify("weather2","/HeWeather6/*[0]/basic/location","Beijing");
 ```
 
-直接对比两个JSON String：
+##### 直接对比两个JSON String：
 
 ```java
 verify("weather1", "weather2");
 ```
 
-对比两个实体（包括实体中不对比key和List实体的主键）
+##### 对比两个实体（包括实体中不对比key和List实体的主键）
 
 ```java
 .verify("com.testflow.apitest.testentity.JsonsRootBean", //对比实体类型
@@ -109,10 +112,10 @@ verify("weather1", "weather2");
                 "Daily_forecast:{wind_dir}") //对比实体中不对比字段
 ```
 
-##  Document：
+#  Document：
 
 ### 接入步骤
-maven pom导入
+
 
 
 
@@ -120,11 +123,11 @@ maven pom导入
 
 Junit：
 
-参考 com\testflow\apitest\normaltest\Example.java
+ com\testflow\apitest\normaltest\Example.java
 
 Cucumber：
 
-参考 com\testflow\apitest\cucumber\feature\test.feature
+ com\testflow\apitest\cucumber\feature\test.feature
 
 ### 开放方法
 
@@ -230,14 +233,32 @@ public Runner verify(String paramType, String expObj, String atlObj, String pkMa
 ```
 
 ##### Other：
+
+##### Xpath读取缓存实体字段的写法
 ```java
-//Xpath读取缓存实体字段的写法
-//Cucumber request模式，请求feature文件写法
-//相同类型实体，不对比字段和对比list主键的写法
+${缓存Key:JSON定位串}
+${weather1:/HeWeather6/*[0]/basic/location}
+```
+
+##### Cucumber request模式，请求feature文件写法
+```java
+And I send request "Root" to url "Url" get "targetParamKey" with
+      | Key                                           | Value   |
+      | Child1                                        | parame1 |
+      | Child2:GrandChild                             | parame2 |
+      | ListChild3:ListChild3Item[0]:GrandGrandChild1 | parame3 |
+      | ListChild3:ListChild3Item[1]:GrandGrandChild1 | parame4 |
+      | ListChild3:ListChild3Item[1]:GrandGrandChild2 | parame5 |
+```
+
+##### 相同类型实体，不对比字段和对比list主键的写法
+```java
+类名1:{字段名1,字段名2},类名2:{字段名1,字段名2}
+Heweather6:{status}, Daily_forecast:{cond_code_d, cond_code_n}
 ```
 
 
-##  PS：
+#  PS：
 1. 目前发送请求只支持Json格式。
 2. 目前缓存只采用Json String的格式存储。
 3. 目前针对大型系统的接口测试，一般采用自动化测试代码动态计算预期值的方式。针对这种模式testflow_api可以迅速支持落地，完成高质量的测试。
