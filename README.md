@@ -20,7 +20,7 @@ new TestFlowManager.Runner().sendRequest("",
 ```
 
 #### 2. 可读性
-方法根据具体执行动作进行封装，无缝连接Cucumber（Cucumber接入方式见test下的例子）
+方法根据具体执行动作进行封装，无缝接入Cucumber
 
 ##### junit模式：
 ```java
@@ -111,14 +111,14 @@ verify("weather1", "weather2");
                 "Daily_forecast:{wind_dir}") //对比实体中不对比字段
 ```
 
-#  Document：
+##  Document：
 
-### 接入步骤
-
-
+#### 接入步骤
 
 
-### Junit模式/Cucumber模式
+
+
+#### Junit模式/Cucumber模式
 
 Junit：
 
@@ -128,7 +128,7 @@ Cucumber：
 
  com\testflow\apitest\cucumber\feature\test.feature
 
-### 开放方法
+#### 开放方法
 
 ##### Requset：
 
@@ -257,7 +257,7 @@ Heweather6:{status}, Daily_forecast:{cond_code_d, cond_code_n}
 ```
 
 
-#  PS：
+##  PS：
 1. 目前发送请求只支持Json格式。
 2. 目前缓存只采用Json String的格式存储。
 3. 目前针对大型系统的接口测试，一般采用自动化测试代码动态计算预期值的方式。针对这种模式testflow_api可以迅速支持落地，完成高质量的测试。
