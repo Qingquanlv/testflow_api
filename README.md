@@ -3,6 +3,8 @@
 
 目前随着测试场景的复杂性和测试数据的多样性，仅仅通过发送Request对比固定Responce的方式已经很难满足现有接口测试需求。所以这个时候你需要testflow_API。
 
+
+
 # introduction：
 
 testflow_API的优势：
@@ -51,7 +53,7 @@ new TestFlowManager.Runner().sendRequest("",
 #### 4. Parse方法
 使用parse方法可以对缓存中的数据进行更复杂的处理，支持处理后存入缓存
 
-子类重写的方式：
+##### 子类重写的方式：
 ```java
 .overrideParse("com.testflow.apitest.testentity.JsonsRootBean",
                 "weather1",
@@ -65,7 +67,7 @@ new TestFlowManager.Runner().sendRequest("",
         })
 ```
 
-反射文件的方式：
+##### 反射文件的方式：
 ```java
 .reflectParse("com.testflow.apitest.normaltest.TestMethod",
                 "convertMethod",
@@ -75,7 +77,7 @@ new TestFlowManager.Runner().sendRequest("",
         )
 ```
 
-插入String格式代码片方式：
+##### 插入String格式代码片方式：
 ```java
 .sourceParse(javaFileSource,
                 "convertMethod",
@@ -88,19 +90,19 @@ new TestFlowManager.Runner().sendRequest("",
 
 #### 5. 多样的对比方法
 
-验证实体中任一字段值：
+##### 验证实体中任一字段值：
 
 ```java
 verify("weather2","/HeWeather6/*[0]/basic/location","Beijing");
 ```
 
-直接对比两个JSON String：
+##### 直接对比两个JSON String：
 
 ```java
 verify("weather1", "weather2");
 ```
 
-对比两个实体（包括实体中不对比key和List实体的主键）
+##### 对比两个实体（包括实体中不对比key和List实体的主键）
 
 ```java
 .verify("com.testflow.apitest.testentity.JsonsRootBean", //对比实体类型
