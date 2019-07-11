@@ -250,7 +250,7 @@ And I send request "Root" to url "Url" get "targetParamKey" with
       | ListChild3:ListChild3Item[1]:GrandGrandChild2 | parame5 |
 ```
 
-##### 相同类型实体，不对比字段和对比list主键的写法
+##### 相同类型实体，不对比字段与对比list主键的字符串写法
 ```java
 类名1:{字段名1,字段名2},类名2:{字段名1,字段名2}
 Heweather6:{status}, Daily_forecast:{cond_code_d, cond_code_n}
