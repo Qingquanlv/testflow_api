@@ -15,20 +15,15 @@ import cucumber.api.junit.Cucumber;
         tags = { "@" }, format = {"pretty", "html:target/cucumber", "json:target/cucumber.json" })
 
 public class TestRunner {
-    public static TestFlowManager.Runner runner;
 
     @Before
     public void beforeScenario(final Scenario scenario) {
-        runner = new TestFlowManager.Runner();
         System.out.println(String.format("Start test the Scenario: %s.\n", scenario.getName()));
-
-        BufferManager.initBufferMap();
     }
 
     @After
     public void afterScenario(final Scenario scenario) {
         System.out.println(String.format("Test the Scenario: %s end.\n", scenario.getName()));
-        BufferManager.deposeBufferMap();
     }
 }
 

@@ -10,18 +10,18 @@ public class Example {
     //发送请求后，验证返回报文某一节点的值
     @Test
     public void example1() {
-        new TestFlowManager.Runner().sendRequest("",
+        TestFlowManager.runner().sendRequest("",
                 "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01",
                 "weather"
         ).verify("weather",
                 "/HeWeather6/*[0]/basic/location", //Xpath配置Json，验证节点的值
-                "南京");
+                "南京").deposed();
     }
 
     //发送请求后，验证对比返回Json String
     @Test
     public void example2() {
-        new TestFlowManager.Runner().sendRequest("",
+        TestFlowManager.runner().sendRequest("",
                 "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01",
                 "weather1"
         ).sendRequest("",
@@ -33,7 +33,7 @@ public class Example {
     //发送请求后，验证对比返回实体的所有字段值
     @Test
     public void example3() {
-        new TestFlowManager.Runner().sendRequest("",
+        TestFlowManager.runner().sendRequest("",
                 "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01",
                 "weather1"
         ).sendRequest("",
@@ -49,7 +49,7 @@ public class Example {
     //发送请求，使用子类重写模式parse返回报文，再验证对比返回实体的所有字段值
     @Test
     public void example4() {
-        new TestFlowManager.Runner().sendRequest("",
+        TestFlowManager.runner().sendRequest("",
                 "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01",
                 "weather1"
         ).overrideParse("com.testflow.apitest.testentity.JsonsRootBean",
@@ -71,7 +71,7 @@ public class Example {
     //发送请求，使用反射模式parse返回报文，再验证对比返回实体的所有字段值
     @Test
     public void example5() {
-        new TestFlowManager.Runner().sendRequest("",
+        TestFlowManager.runner().sendRequest("",
                 "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01",
                 "weather1"
         ).reflectParse("com.testflow.apitest.normaltest.TestMethod",
@@ -96,7 +96,7 @@ public class Example {
 
     @Test
     public void example6() {
-        new TestFlowManager.Runner().sendRequest("",
+        TestFlowManager.runner().sendRequest("",
                 "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01",
                 "weather1"
         ).sourceParse(javaFileSource,
