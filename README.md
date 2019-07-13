@@ -111,9 +111,9 @@ verify("weather1", "weather2");
                 "Daily_forecast:{wind_dir}") //对比实体中不对比字段
 ```
 
-##  Document：
+##  Documentation：
 
-#### 接入步骤
+#### Getting Statted
 
 
 
