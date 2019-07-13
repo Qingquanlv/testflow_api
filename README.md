@@ -12,7 +12,7 @@
 一行代码搞定接口测试：
 
 ```java
-new TestFlowManager.Runner().sendRequest("",
+TestFlowManager.runner().sendRequest("",
                 "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01",
                 "weather").verify("weather",
                         "/HeWeather6/*[0]/basic/location",
@@ -24,7 +24,7 @@ new TestFlowManager.Runner().sendRequest("",
 
 ##### junit模式：
 ```java
-new TestFlowManager.Runner().sendRequest("",
+TestFlowManager.runner().sendRequest("",
                 "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01",
                 "weather");
 ```
@@ -40,7 +40,7 @@ Scenario: Query weather
 
 ```java
 //缓存中获取的key值${weather1:/HeWeather6/*[0]/basic/location}
-new TestFlowManager.Runner().sendRequest("",
+TestFlowManager.runner().sendRequest("",
                 "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01",
                 "weather1").sendRequest("",
                         "https://free-api.heweather.net/s6/weather/forecast?location=${weather1:/HeWeather6/*[0]/basic/location}&key=245b7545b69b4b4a9bc2a7e497a88b01",
@@ -140,7 +140,7 @@ Cucumber：
 * @param responce : 保存response的key
 *
 */
-public Runner sendRequest(String requestJsonStr, String url, String responce) 
+public TestFlowManager sendRequest(String requestJsonStr, String url, String responce) 
 ```
 
 ```java
@@ -152,7 +152,7 @@ public Runner sendRequest(String requestJsonStr, String url, String responce)
  * @param responce : 保存response的key
  *
  */
-public Runner sendRequest(String requestJsonStr, String url, String responce) 
+public TestFlowManager sendRequest(String requestJsonStr, String url, String responce) 
 ```
 
 ##### Paser：
@@ -167,7 +167,7 @@ public Runner sendRequest(String requestJsonStr, String url, String responce)
  * @param targetParemKey : parse返回值key
  *
  */
-public Runner reflectParse(String convertFileName, String convertMethodName, String sourceParemKey, String sourceParamType, String targetParemKey)
+public TestFlowManager reflectParse(String convertFileName, String convertMethodName, String sourceParemKey, String sourceParamType, String targetParemKey)
 ```
 
 ```java
@@ -179,7 +179,7 @@ public Runner reflectParse(String convertFileName, String convertMethodName, Str
  * @param dataParser : dataParser重新类
  *
  */
-public Runner overrideParse(String sourceParemType, String sourceParemKey, String targeParemtKey, DataParser dataParser)
+public TestFlowManager overrideParse(String sourceParemType, String sourceParemKey, String targeParemtKey, DataParser dataParser)
 ```
 
 ```java
@@ -193,7 +193,7 @@ public Runner overrideParse(String sourceParemType, String sourceParemKey, Strin
  * @param targetParamType : parse返回值类型
  *
  */
-public Runner sourceParse(String convertMethodSource, String convertMethodName, String sourceParemKey, String sourceParamType, String targetParemKey, String targetParamType)
+public TestFlowManager sourceParse(String convertMethodSource, String convertMethodName, String sourceParemKey, String sourceParamType, String targetParemKey, String targetParamType)
 ```
 
 ##### Verify：
@@ -205,7 +205,7 @@ public Runner sourceParse(String convertMethodSource, String convertMethodName, 
  * @param atlObj : 实际值缓存Key
  *
  */
-public Runner verify(String expObj, String atlObj)
+public TestFlowManager verify(String expObj, String atlObj)
 ```
 
 ```java
@@ -218,7 +218,7 @@ public Runner verify(String expObj, String atlObj)
  * @param atlObj : 实体中不对比的字段
  *
  */
-public Runner verify(String paramType, String expObj, String atlObj, String pkMapStr, String noCompareItemMapStr)
+public TestFlowManager verify(String paramType, String expObj, String atlObj, String pkMapStr, String noCompareItemMapStr)
 ```
 
 ```java
@@ -228,7 +228,7 @@ public Runner verify(String paramType, String expObj, String atlObj, String pkMa
  * @param atlObj : parse实际值缓存Key
  *
  */
-public Runner verify(String paramType, String expObj, String atlObj, String pkMapStr, String noCompareItemMapStr)
+public TestFlowManager verify(String paramType, String expObj, String atlObj, String pkMapStr, String noCompareItemMapStr)
 ```
 
 ##### Other：
