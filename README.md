@@ -115,17 +115,40 @@ verify("weather1", "weather2");
 
 #### Getting Statted
 
-
-
+#### 引入POM
+```java
+<dependency>
+    <groupId>com.github.qingquanlv</groupId>
+    <artifactId>testflow_api</artifactId>
+    <version>0.0.1</version>
+</dependency>
+```
 
 #### Junit模式/Cucumber模式
 
 Junit：
 
- com\testflow\apitest\normaltest\Example.java
+```java
+import com.testflow.apitest.TestFlowManager;
+import org.junit.Test;
+
+public class Example {
+
+    @Test
+    public void example1() {
+        TestFlowManager.runner().sendRequest("",
+                "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01",
+                "weather"
+        ).verify("weather",
+                "/HeWeather6/*[0]/basic/location", //Xpath配置Json，验证节点的值
+                "南京").deposed();
+    }
+}
+```
 
 Cucumber：
 
+参考例子：
  com\testflow\apitest\cucumber\feature\test.feature
 
 #### 开放方法
