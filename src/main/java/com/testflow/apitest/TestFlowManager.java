@@ -62,6 +62,122 @@ public class TestFlowManager {
     }
 
     /**
+     * 配置request header
+     * @param headerKey
+     * @param headerValue
+     * @return
+     */
+    public TestFlowManager setHeaders(String headerKey, String headerValue) {
+
+        return this;
+    }
+
+    /**
+     * 配置Request config
+     * @param configKey
+     * @param configValue
+     * @return
+     */
+    public TestFlowManager setRequestConfig(String configKey, String configValue) {
+        return this;
+    }
+
+    /**
+     * 配置请求代理
+     * @param configKey
+     * @param configValue
+     * @return
+     */
+    public TestFlowManager setProxy(String configKey, String configValue) {
+        return this;
+    }
+
+    /**
+     * 发送Post请求
+     * @param requestJsonStr : Json格式请求
+     * @param url : 请求url
+     * @param responce : 保存response的key
+     *
+     */
+    public TestFlowManager sendPostRequest(String requestJsonStr, String url, String responce) {
+        Request request = new Request();
+        request.sendPostRequest(requestJsonStr, url, responce);
+        return this;
+    }
+
+    /**
+     * 发送Get请求
+     * @param url : 请求url
+     * @param responce : 保存response的key
+     *
+     */
+    public TestFlowManager sendGetRequest(String url, String responce) {
+        Request request = new Request();
+        request.sendGetRequest(url, responce);
+        return this;
+    }
+
+    /**
+     * 发送Header请求
+     * @param url : 请求url
+     * @param responce : 保存response的key
+     *
+     */
+    public TestFlowManager sendHeadRequest(String url, String responce) {
+        Request request = new Request();
+        request.sendHeadRequest(url, responce);
+        return this;
+    }
+
+    /**
+     * 发送Put请求
+     * @param url : 请求url
+     * @param responce : 保存response的key
+     *
+     */
+    public TestFlowManager sendPutRequest(String requestJsonStr, String url, String responce) {
+        Request request = new Request();
+        request.sendPutRequest(requestJsonStr, url, responce);
+        return this;
+    }
+
+    /**
+     * 发送Delete请求
+     * @param url : 请求url
+     * @param responce : 保存response的key
+     *
+     */
+    public TestFlowManager sendDeleteRequest(String requestJsonStr, String url, String responce) {
+        Request request = new Request();
+        request.sendDeleteRequest(url, responce);
+        return this;
+    }
+
+    /**
+     * 发送Options请求
+     * @param url : 请求url
+     * @param responce : 保存response的key
+     *
+     */
+    public TestFlowManager sendOptionsRequest(String url, String responce) {
+        Request request = new Request();
+        request.sendOptionsRequest(url, responce);
+        return this;
+    }
+
+    /**
+     * 发送Trace请求
+     * @param url : 请求url
+     * @param responce : 保存response的key
+     *
+     */
+    public TestFlowManager sendTraceRequest(String url, String responce) {
+        Request request = new Request();
+        request.sendTraceRequest(url, responce);
+        return this;
+    }
+
+    /**
      * 发送Cucumber格式请求
      * @param requsetName : cucumber格式RequestName
      * @param requestListMap : cucumber table.asMaps 格式request参数
@@ -194,5 +310,4 @@ public class TestFlowManager {
         }
         return this;
     }
-
 }
