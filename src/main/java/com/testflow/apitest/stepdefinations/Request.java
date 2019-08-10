@@ -144,4 +144,28 @@ public class Request {
         logger.info(String.format("%s Get responce: %s", new Date(), requestObject));
         BufferManager.addBufferByKey(responce, requestObject);
     }
+
+    /**
+     * 设置请求中的Header
+     *
+     */
+    public void setHeaders(String headerKey, String headerVal) {
+        HttpClientUtil.setHttpHeaderParam(headerKey, headerVal);
+    }
+
+    /**
+     * 设置请求Config
+     *
+     */
+    public void setRequestConfig(String configKey, String configVal) {
+        HttpClientUtil.setRequestConfigParam(configKey, configVal);
+    }
+
+    /**
+     * 设置请求代理
+     *
+     */
+    public void setProxy(String ipAddress, int port, String scheme) {
+        HttpClientUtil.setProxy(ipAddress, port, scheme);
+    }
 }

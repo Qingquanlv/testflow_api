@@ -26,14 +26,51 @@ import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 public class HttpClientUtil {
 
     //HTTP内容类型。相当于form表单的形式，提交数据
-    public static final String CONTENT_TYPE_JSON_URL = "application/json;charset=utf-8";
+    public static final String CONTENT_TYPE_JSON = "application/json;charset=utf-8";
     public static final String CONTENT_TYPE_XML_URL="application/xml";
+    //Socket超时时间
+    public static final String SOCKETTIMEOUT = "socketTimeout";
+    //连接超时时间
+    public static final String CONNECTTIMEOUT = "connectTimeout";
+    //请求超时时间
+    public static final String CONNECTIONREQUESTTIMEOUT = "connectionRequestTimeout";
+    //本机
+    public static final String LOCAL_HOST = "localhost";
+
+    //HTTP头部类型
+    private static HashMap<String, String> httpHeaderParam;
+    // 请求配置
+    private static HashMap<String, String> requestConfigParam;
+    private static RequestConfig requestConfig;
+
+    public static void setHttpHeaderParam(String headerKey, String headerVal) {
+        if (null == httpHeaderParam) {
+            httpHeaderParam = new HashMap<>();
+        }
+        httpHeaderParam.put(headerKey, headerVal);
+    }
+
+    public static HashMap<String, String> getHttpHeaderParam() {
+        return httpHeaderParam;
+    }
+
+    public static void setRequestConfigParam(String headerKey, String headerVal) {
+        if (null == requestConfigParam) {
+            requestConfigParam = new HashMap<>();
+        }
+        requestConfigParam.put(headerKey, headerVal);
+    }
+
+    public static HashMap<String, String> getRequestConfigParam() {
+        return requestConfigParam;
+    }
 
     /**
      * 发送 Head请求
@@ -43,6 +80,8 @@ public class HttpClientUtil {
     public static String sendHttpHead(String httpUrl) {
         // 创建HttpHead
         HttpHead httpHead = new HttpHead(httpUrl);
+        addHeaders(httpHead);
+        buildRequestConfig();
         return HttpClientImpl.sendHttp(httpHead);
     }
 
@@ -54,6 +93,8 @@ public class HttpClientUtil {
     public static String sendHttpTrace(String httpUrl) {
         // 创建HttpTrace
         HttpTrace httpTrace = new HttpTrace(httpUrl);
+        addHeaders(httpTrace);
+        buildRequestConfig();
         return HttpClientImpl.sendHttp(httpTrace);
     }
 
@@ -65,6 +106,8 @@ public class HttpClientUtil {
     public static String sendHttpOptions(String httpUrl) {
         // 创建HttpOptions
         HttpOptions httpOptions = new HttpOptions(httpUrl);
+        addHeaders(httpOptions);
+        buildRequestConfig();
         return HttpClientImpl.sendHttp(httpOptions);
     }
 
@@ -76,6 +119,8 @@ public class HttpClientUtil {
     public static String sendHttpDelete(String httpUrl) {
         // 创建httpPost
         HttpDelete httpDelete = new HttpDelete(httpUrl);
+        addHeaders(httpDelete);
+        buildRequestConfig();
         return HttpClientImpl.sendHttp(httpDelete);
     }
 
@@ -87,6 +132,8 @@ public class HttpClientUtil {
     public static String sendHttpGet(String httpUrl) {
         // 创建get请求
         HttpGet httpGet = new HttpGet(httpUrl);
+        addHeaders(httpGet);
+        buildRequestConfig();
         return HttpClientImpl.sendHttp(httpGet);
     }
 
@@ -98,18 +145,20 @@ public class HttpClientUtil {
      */
     public static String sendHttpPutJson(String httpUrl, String paramsJson) {
         // 创建httpPost
-        HttpPut httpPost = new HttpPut(httpUrl);
+        HttpPut httpPut = new HttpPut(httpUrl);
         try {
             // 设置参数
             if (paramsJson != null && paramsJson.trim().length() > 0) {
                 StringEntity stringEntity = new StringEntity(paramsJson, "UTF-8");
-                stringEntity.setContentType(CONTENT_TYPE_JSON_URL);
-                httpPost.setEntity(stringEntity);
+                stringEntity.setContentType(CONTENT_TYPE_JSON);
+                addHeaders(httpPut);
+                httpPut.setEntity(stringEntity);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return HttpClientImpl.sendHttp(httpPost);
+        buildRequestConfig();
+        return HttpClientImpl.sendHttp(httpPut);
     }
 
     /**
@@ -125,13 +174,38 @@ public class HttpClientUtil {
             // 设置参数
             if (paramsJson != null && paramsJson.trim().length() > 0) {
                 StringEntity stringEntity = new StringEntity(paramsJson, "UTF-8");
-                stringEntity.setContentType(CONTENT_TYPE_JSON_URL);
+                stringEntity.setContentType(CONTENT_TYPE_JSON);
                 httpPost.setEntity(stringEntity);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        buildRequestConfig();
         return HttpClientImpl.sendHttp(httpPost);
+    }
+
+
+    /**
+     * 设置代理
+     *
+     * @param ipAddress
+     * @param port
+     * @param scheme
+     */
+    public static void setProxy(String ipAddress, int port, String scheme) {
+        try {
+            HttpHost proxy = null;
+            if (LOCAL_HOST.equals(ipAddress.trim().toLowerCase())) {
+                InetAddress addr = InetAddress.getLocalHost();
+                proxy = new HttpHost(addr, port, scheme);
+            }
+            else {
+                proxy = new HttpHost(ipAddress, port, scheme);
+            }
+            RequestConfig.custom().setProxy(proxy);
+        }catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -182,5 +256,63 @@ public class HttpClientUtil {
             }
         }
         return parameterBuffer.toString();
+    }
+
+    /**
+     * 添加请求Header
+     *
+     * @param param
+     * @param <T>
+     */
+    private static <T extends HttpRequestBase> void addHeaders(T param) {
+        HashMap<String, String> map = getHttpHeaderParam();
+        if (map != null) {
+            for (String key : map.keySet()) {
+                param.addHeader(key, map.get(key));
+            }
+        }
+    }
+
+    /**
+     * 设置请求参数
+     *
+     */
+    private static void buildRequestConfig() {
+        HashMap<String, String> map = getRequestConfigParam();
+        // 根据默认超时限制初始化requestConfig
+        int socketTimeout = 20000;
+        int connectTimeout = 20000;
+        int connectionRequestTimeout = 20000;
+        if (null != map.get(SOCKETTIMEOUT)) {
+            RequestConfig.custom().setSocketTimeout(Integer.parseInt(map.get(SOCKETTIMEOUT)));
+        }
+        else {
+            RequestConfig.custom().setSocketTimeout(socketTimeout);
+        }
+        if (null != map.get(CONNECTTIMEOUT)) {
+            RequestConfig.custom().setConnectTimeout(Integer.parseInt(map.get(CONNECTTIMEOUT)));
+        }
+        else {
+            RequestConfig.custom().setConnectTimeout(connectTimeout);
+        }
+        if (null != map.get(CONNECTIONREQUESTTIMEOUT)) {
+            RequestConfig.custom().setConnectionRequestTimeout(Integer.parseInt(map.get(CONNECTIONREQUESTTIMEOUT)));
+        }
+        else {
+            RequestConfig.custom().setConnectionRequestTimeout(connectionRequestTimeout);
+        }
+        if (null != map.get(CONNECTIONREQUESTTIMEOUT)) {
+            RequestConfig.custom().setConnectionRequestTimeout(Integer.parseInt(map.get(CONNECTIONREQUESTTIMEOUT)));
+        }
+        else {
+            RequestConfig.custom().setConnectionRequestTimeout(connectionRequestTimeout);
+        }
+        if (null != map.get(CONNECTIONREQUESTTIMEOUT)) {
+            RequestConfig.custom().setConnectionRequestTimeout(Integer.parseInt(map.get(CONNECTIONREQUESTTIMEOUT)));
+        }
+        else {
+            RequestConfig.custom().setConnectionRequestTimeout(connectionRequestTimeout);
+        }
+        RequestConfig.custom().build();
     }
 }

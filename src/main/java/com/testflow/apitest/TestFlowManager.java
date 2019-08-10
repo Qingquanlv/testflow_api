@@ -62,37 +62,6 @@ public class TestFlowManager {
     }
 
     /**
-     * 配置request header
-     * @param headerKey
-     * @param headerValue
-     * @return
-     */
-    public TestFlowManager setHeaders(String headerKey, String headerValue) {
-
-        return this;
-    }
-
-    /**
-     * 配置Request config
-     * @param configKey
-     * @param configValue
-     * @return
-     */
-    public TestFlowManager setRequestConfig(String configKey, String configValue) {
-        return this;
-    }
-
-    /**
-     * 配置请求代理
-     * @param configKey
-     * @param configValue
-     * @return
-     */
-    public TestFlowManager setProxy(String configKey, String configValue) {
-        return this;
-    }
-
-    /**
      * 发送Post请求
      * @param requestJsonStr : Json格式请求
      * @param url : 请求url
@@ -174,6 +143,46 @@ public class TestFlowManager {
     public TestFlowManager sendTraceRequest(String url, String responce) {
         Request request = new Request();
         request.sendTraceRequest(url, responce);
+        return this;
+    }
+
+    /**
+     * 设置请求中的Header
+     *
+     * @param headerKey : 请求HeaderKey
+     * @param headerVal : 请求HeaderVal
+     * @return
+     */
+    public TestFlowManager setHeaders(String headerKey, String headerVal) {
+        Request request = new Request();
+        request.sendTraceRequest(headerKey, headerVal);
+        return this;
+    }
+
+    /**
+     * 设置请求Config
+     *
+     * @param configKey : 请求配置Key
+     * @param configVal : 请求配置Val
+     * @return
+     */
+    public TestFlowManager setRequestConfig(String configKey, String configVal) {
+        Request request = new Request();
+        request.setRequestConfig(configKey, configVal);
+        return this;
+    }
+
+    /**
+     * 设置请求代理
+     *
+     * @param ipAddress : 代理IP
+     * @param port : 代理端口号
+     * @param scheme : Http/Https
+     * @return
+     */
+    public TestFlowManager setProxy(String ipAddress, int port, String scheme) {
+        Request request = new Request();
+        request.setProxy(ipAddress, port, scheme);
         return this;
     }
 

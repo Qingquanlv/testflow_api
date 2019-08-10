@@ -34,14 +34,6 @@ import java.util.HashMap;
 public class HttpClientImpl {
     //utf-8字符编码
     public static final String CHARSET_UTF_8 = "utf-8";
-    //本机
-    public static final String LOCAL_HOST = "localhost";
-    //本机
-    public static final String SOCKETTIMEOUT = "socketTimeout";
-    //本机
-    public static final String CONNECTTIMEOUT = "connectTimeout";
-    //本机
-    public static final String CONNECTIONREQUESTTIMEOUT = "connectionRequestTimeout";
     //HTTP内容类型
     public static final String CONTENT_TYPE_TEXT_HTML = "text/xml";
     //HTTP内容类型。相当于form表单的形式，提交数据
@@ -73,72 +65,6 @@ public class HttpClientImpl {
         } catch (KeyStoreException e) {
             e.printStackTrace();
         } catch (KeyManagementException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * 设置请求配置
-     *
-     * @param configMap
-     */
-    public static void setRequestConfig(HashMap<String, String> configMap) {
-        // 根据默认超时限制初始化requestConfig
-        int socketTimeout = 20000;
-        int connectTimeout = 20000;
-        int connectionRequestTimeout = 20000;
-        if (null != configMap.get(SOCKETTIMEOUT)) {
-            RequestConfig.custom().setSocketTimeout(Integer.parseInt(configMap.get(SOCKETTIMEOUT)));
-        }
-        else {
-            RequestConfig.custom().setSocketTimeout(socketTimeout);
-        }
-        if (null != configMap.get(CONNECTTIMEOUT)) {
-            RequestConfig.custom().setConnectTimeout(Integer.parseInt(configMap.get(CONNECTTIMEOUT)));
-        }
-        else {
-            RequestConfig.custom().setConnectTimeout(connectTimeout);
-        }
-        if (null != configMap.get(CONNECTIONREQUESTTIMEOUT)) {
-            RequestConfig.custom().setConnectionRequestTimeout(Integer.parseInt(configMap.get(CONNECTIONREQUESTTIMEOUT)));
-        }
-        else {
-            RequestConfig.custom().setConnectionRequestTimeout(connectionRequestTimeout);
-        }
-        if (null != configMap.get(CONNECTIONREQUESTTIMEOUT)) {
-            RequestConfig.custom().setConnectionRequestTimeout(Integer.parseInt(configMap.get(CONNECTIONREQUESTTIMEOUT)));
-        }
-        else {
-            RequestConfig.custom().setConnectionRequestTimeout(connectionRequestTimeout);
-        }
-        if (null != configMap.get(CONNECTIONREQUESTTIMEOUT)) {
-            RequestConfig.custom().setConnectionRequestTimeout(Integer.parseInt(configMap.get(CONNECTIONREQUESTTIMEOUT)));
-        }
-        else {
-            RequestConfig.custom().setConnectionRequestTimeout(connectionRequestTimeout);
-        }
-        RequestConfig.custom().build();
-    }
-
-    /**
-     * 设置代理
-     *
-     * @param ipAddress
-     * @param port
-     * @param scheme
-     */
-    public static void setProxy(String ipAddress, int port, String scheme) {
-        try {
-            HttpHost proxy = null;
-            if (LOCAL_HOST.equals(ipAddress.trim().toLowerCase())) {
-                InetAddress addr = InetAddress.getLocalHost();
-                proxy = new HttpHost(addr, port, scheme);
-            }
-            else {
-                proxy = new HttpHost(ipAddress, port, scheme);
-            }
-            RequestConfig.custom().setProxy(proxy);
-        }catch (UnknownHostException e) {
             e.printStackTrace();
         }
     }
