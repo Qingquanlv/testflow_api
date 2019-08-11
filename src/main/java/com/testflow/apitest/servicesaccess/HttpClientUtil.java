@@ -48,7 +48,6 @@ public class HttpClientUtil {
     private static HashMap<String, String> httpHeaderParam;
     // 请求配置
     private static HashMap<String, String> requestConfigParam;
-    private static RequestConfig requestConfig;
 
     public static void setHttpHeaderParam(String headerKey, String headerVal) {
         if (null == httpHeaderParam) {
@@ -82,6 +81,7 @@ public class HttpClientUtil {
         HttpHead httpHead = new HttpHead(httpUrl);
         addHeaders(httpHead);
         buildRequestConfig();
+        RequestConfig.custom().build();
         return HttpClientImpl.sendHttp(httpHead);
     }
 
@@ -95,6 +95,7 @@ public class HttpClientUtil {
         HttpTrace httpTrace = new HttpTrace(httpUrl);
         addHeaders(httpTrace);
         buildRequestConfig();
+        RequestConfig.custom().build();
         return HttpClientImpl.sendHttp(httpTrace);
     }
 
@@ -108,6 +109,7 @@ public class HttpClientUtil {
         HttpOptions httpOptions = new HttpOptions(httpUrl);
         addHeaders(httpOptions);
         buildRequestConfig();
+        RequestConfig.custom().build();
         return HttpClientImpl.sendHttp(httpOptions);
     }
 
@@ -121,6 +123,7 @@ public class HttpClientUtil {
         HttpDelete httpDelete = new HttpDelete(httpUrl);
         addHeaders(httpDelete);
         buildRequestConfig();
+        RequestConfig.custom().build();
         return HttpClientImpl.sendHttp(httpDelete);
     }
 
@@ -134,6 +137,7 @@ public class HttpClientUtil {
         HttpGet httpGet = new HttpGet(httpUrl);
         addHeaders(httpGet);
         buildRequestConfig();
+        RequestConfig.custom().build();
         return HttpClientImpl.sendHttp(httpGet);
     }
 
@@ -158,6 +162,7 @@ public class HttpClientUtil {
             e.printStackTrace();
         }
         buildRequestConfig();
+        RequestConfig.custom().build();
         return HttpClientImpl.sendHttp(httpPut);
     }
 
@@ -181,6 +186,7 @@ public class HttpClientUtil {
             e.printStackTrace();
         }
         buildRequestConfig();
+        RequestConfig.custom().build();
         return HttpClientImpl.sendHttp(httpPost);
     }
 
@@ -313,6 +319,5 @@ public class HttpClientUtil {
         else {
             RequestConfig.custom().setConnectionRequestTimeout(connectionRequestTimeout);
         }
-        RequestConfig.custom().build();
     }
 }
