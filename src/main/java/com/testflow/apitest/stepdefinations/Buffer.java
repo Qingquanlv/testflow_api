@@ -12,4 +12,8 @@ public class Buffer {
     public Object getBufferByKey(String bufferKey) {
         return BufferManager.getBufferByKey(bufferKey);
     }
+
+    public void addBufferByKey(String bufferKey, String bufferVal) {
+        BufferManager.addBufferByKey(bufferKey, bufferVal);
+    }
 }

@@ -26,9 +26,9 @@ public class BufferManager {
         return requestObjectBufferMap.get(bufferKey);
     }
 
-    public static void addBufferByKey(String bufferKey, String bufferObject) {
+    public static void addBufferByKey(String bufferKey, String bufferVal) {
         if(!bufferExist(bufferKey)) {
-            requestObjectBufferMap.put(bufferKey, bufferObject);
+            requestObjectBufferMap.put(bufferKey, bufferVal);
         }
         else
         {
@@ -43,7 +43,7 @@ public class BufferManager {
                 }
                 i++;
             }
-            requestObjectBufferMap.put(bufferKey, bufferObject);
+            requestObjectBufferMap.put(bufferKey, bufferVal);
         }
     }
 

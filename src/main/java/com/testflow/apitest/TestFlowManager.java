@@ -261,7 +261,6 @@ public class TestFlowManager {
         return this;
     }
 
-
     /**
      * 获取缓存
      *
@@ -269,6 +268,15 @@ public class TestFlowManager {
     private Object getBuffer(String bufferKey) {
         Buffer buffer = new Buffer();
         return buffer.getBufferByKey(bufferKey);
+    }
+
+    /**
+     * 添加缓存
+     *
+     */
+    private void addBuffer(String bufferKey, String bufferVal) {
+        Buffer buffer = new Buffer();
+        buffer.addBufferByKey(bufferKey, bufferVal);
     }
 
     /**
