@@ -21,14 +21,9 @@ public class ServiceAccess {
      * @param objectName 反射类名
      * @return Class<?> 返回类Class
      */
-    public static Class<?> reflectClazz(String objectName)  {
+    public static Class<?> reflectClazz(String objectName) throws Exception {
         Class<?> clazz = null;
-        try {
-            clazz = Class.forName(objectName);
-        }
-        catch (Exception ex) {
-            logger.warn(String.format("Reflect object: create class \"%s\" failed. ", objectName) + ex);
-        }
+        clazz = Class.forName(objectName);
         return clazz;
     }
 
@@ -90,20 +85,19 @@ public class ServiceAccess {
     }
 
     /**
-     * 根据类实例和方法名和方法形参，获取方法
+     * 根据类实例和方法名和方法的一个形参，获取方法
      *
-     * @param bean : 类实例
+     * @param clazz : 类
      * @param methodName : 要反射的类方法
      * @return Method : 方法字节码
      */
-    public static Method getObjMethod(Object bean, String methodName, String firstParam)  {
-        Class<?> clazz = bean.getClass();
+    public static Method reflectMethod(Class<?> clazz, String methodName, Class<?> firstParamType)  {
         Method method = null;
         try {
-            method = clazz.getMethod(methodName, firstParam.getClass());
+            method = clazz.getMethod(methodName, firstParamType);
         }
-        catch (Exception e) {
-            logger.warn(String.format("Init object: Get object \"%s\" method \"%s\" failed.", bean, methodName) + e);
+        catch (Exception ex) {
+            logger.warn(String.format("Init object: relect method %s in object %s failed.", method, clazz) + ex);
         }
         return method;
     }
@@ -115,10 +109,46 @@ public class ServiceAccess {
      * @param methodName : 要反射的类方法
      * @return Method : 方法字节码
      */
-    public static Method reflectMethod(Class<?> clazz, String methodName, Class<?> firstParamType)  {
+    public static Method reflectMethod(Class<?> clazz, String methodName, Class<?> firstParamType, Class<?> secondParamType)  {
         Method method = null;
         try {
-            method = clazz.getMethod(methodName, firstParamType);
+            method = clazz.getMethod(methodName, firstParamType, secondParamType);
+        }
+        catch (Exception ex) {
+            logger.warn(String.format("Init object: relect method %s in object %s failed.", method, clazz) + ex);
+        }
+        return method;
+    }
+
+    /**
+     * 根据类实例和方法名和方法的一个形参，获取方法
+     *
+     * @param clazz : 类
+     * @param methodName : 要反射的类方法
+     * @return Method : 方法字节码
+     */
+    public static Method reflectMethod(Class<?> clazz, String methodName, Class<?> firstParamType, Class<?> secondParamType, Class<?> thirdParamType)  {
+        Method method = null;
+        try {
+            method = clazz.getMethod(methodName, firstParamType, secondParamType, thirdParamType);
+        }
+        catch (Exception ex) {
+            logger.warn(String.format("Init object: relect method %s in object %s failed.", method, clazz) + ex);
+        }
+        return method;
+    }
+
+    /**
+     * 根据类实例和方法名和方法的一个形参，获取方法
+     *
+     * @param clazz : 类
+     * @param methodName : 要反射的类方法
+     * @return Method : 方法字节码
+     */
+    public static Method reflectMethod(Class<?> clazz, String methodName, Class<?> firstParamType, Class<?> secondParamType, Class<?> thirdParamType, Class<?> forthParamType)  {
+        Method method = null;
+        try {
+            method = clazz.getMethod(methodName, firstParamType, secondParamType, thirdParamType, forthParamType);
         }
         catch (Exception ex) {
             logger.warn(String.format("Init object: relect method %s in object %s failed.", method, clazz) + ex);

@@ -22,7 +22,10 @@ public class BufferManager {
         requestObjectBufferMap.clear();
     }
 
-    public static String getBufferByKey(String bufferKey) {
+    public static String getBufferByKey(String bufferKey) throws Exception {
+        if(!requestObjectBufferMap.containsKey(bufferKey)) {
+            throw new Exception(String.format("MapKey is invalid: %s", bufferKey));
+        }
         return requestObjectBufferMap.get(bufferKey);
     }
 

@@ -18,6 +18,9 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -32,6 +35,8 @@ import java.util.HashMap;
  * @date 2019/8/9
  */
 public class HttpClientImpl {
+    private static Logger logger = LoggerFactory.getLogger(HttpClientImpl.class);
+
     //utf-8字符编码
     public static final String CHARSET_UTF_8 = "utf-8";
     //HTTP内容类型
@@ -40,7 +45,44 @@ public class HttpClientImpl {
     public static final String CONTENT_TYPE_FORM_URL = "application/x-www-form-urlencoded";
     //连接管理器
     private static PoolingHttpClientConnectionManager pool;
-    private static RequestConfig requestConfig;// 请求配置
+    // 请求配置
+    public static RequestConfig requestConfig;
+    //HTTP头部类型
+    public static HashMap<String, String> httpHeaderParam;
+    // 请求配置
+    public static HashMap<String, String> requestConfigParam;
+
+    public static void setHttpHeaderParam(String headerKey, String headerVal) {
+        if (null == httpHeaderParam) {
+            httpHeaderParam = new HashMap<>();
+        }
+        httpHeaderParam.put(headerKey, headerVal);
+    }
+
+    public static HashMap<String, String> getHttpHeaderParam() {
+        return httpHeaderParam;
+    }
+
+    public static void setRequestConfigParam(String headerKey, String headerVal) {
+        if (null == requestConfigParam) {
+            requestConfigParam = new HashMap<>();
+        }
+        requestConfigParam.put(headerKey.toLowerCase(), headerVal);
+    }
+
+    public static HashMap<String, String> getRequestConfigParam() {
+        if (null == requestConfigParam) {
+            requestConfigParam = new HashMap<>();
+        }
+        return requestConfigParam;
+    }
+
+    public static RequestConfig getRequestConfig() {
+        if (null == requestConfig) {
+            requestConfig = RequestConfig.custom().build();
+        }
+        return requestConfig;
+    }
 
     static {
         try {
@@ -91,12 +133,12 @@ public class HttpClientImpl {
             // 得到响应实例
             HttpEntity entity = response.getEntity();
             // 可以获得响应头
-            Header[] headers = response.getHeaders(HttpHeaders.CONTENT_TYPE);
+            Header[] headers = response.getAllHeaders();
             for (Header header : headers) {
-                System.out.println(header.getName());
+                //logger.info(String.format("Get responce headers: header key \"%s\" header value\"%s\".", header.getName(), header.getValue()));
             }
             // 得到响应类型
-            System.out.println(ContentType.getOrDefault(response.getEntity()).getMimeType());
+            //logger.info(String.format("Get responce ContentType: %s", ContentType.getOrDefault(response.getEntity()).getMimeType()));
             // 判断响应状态
             if (response.getStatusLine().getStatusCode() >= 300) {
                 throw new Exception(
