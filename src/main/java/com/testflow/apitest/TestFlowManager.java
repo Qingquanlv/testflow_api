@@ -649,6 +649,24 @@ public class TestFlowManager {
     }
 
     /**
+     * 添加缓存
+     *
+     */
+    public TestFlowManager addObjBuffer(String bufferKey, Object bufferVal) {
+        Buffer buffer = new Buffer();
+        LogHelper.stepExecLog("addBuffer", bufferKey, bufferVal.toString());
+        try {
+            String bufferStr = FastJsonUtil.toJson(bufferVal);
+            buffer.addBufferByKey(bufferKey, bufferStr);
+        }
+        catch (Exception ex) {
+            deposed();
+            throw new AssertionError(String.format("add Buffer key \"%s\" value \"%s\" failed: %s", bufferKey, bufferVal, ex));
+        }
+        return this;
+    }
+
+    /**
      * 对比缓存中的Json
      * @param expObj : 预期值缓存Key
      * @param atlObj : 实际值缓存Key
