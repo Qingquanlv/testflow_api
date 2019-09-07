@@ -632,26 +632,10 @@ public class TestFlowManager {
     }
 
     /**
-     * 获取缓存
-     *
-     */
-    private Object getBuffer(String bufferKey) {
-        Buffer buffer = new Buffer();
-        LogHelper.stepExecLog("getBuffer", bufferKey);
-        try {
-            return buffer.getBufferByKey(bufferKey);
-        }
-        catch (Exception ex) {
-            deposed();
-            throw new AssertionError(String.format("get Buffer from key \"%s\" failed: %s", bufferKey ,ex));
-        }
-    }
-
-    /**
      * 添加缓存
      *
      */
-    private void addBuffer(String bufferKey, String bufferVal) {
+    public TestFlowManager addBuffer(String bufferKey, String bufferVal) {
         Buffer buffer = new Buffer();
         LogHelper.stepExecLog("addBuffer", bufferKey, bufferVal);
         try {
@@ -661,6 +645,7 @@ public class TestFlowManager {
             deposed();
             throw new AssertionError(String.format("add Buffer key \"%s\" value \"%s\" failed: %s", bufferKey, bufferVal, ex));
         }
+        return this;
     }
 
     /**

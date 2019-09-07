@@ -47,7 +47,6 @@ public class VerifyUtil {
      */
     public void compareEntity(Object expObj, Object atlObj, Map<String, List<String>> pkMap, Map<String, List<String>> noCompareItemMap)
     {
-        //logger.info(String.format("%s: Start to compare object %s. Expected: \"%s\", Actual \"%s\".", new Date(), index, expObj, atlObj));
         if (isList(expObj) && isList(atlObj))
         {
             List<Object> expObjList = new ArrayList<>();
@@ -58,10 +57,8 @@ public class VerifyUtil {
             }
             catch (Exception ex)
             {
-                //logger.error(String.format("Parse data \"%s\", \"%s\" to list failed", expObj.toString(), atlObj.toString()) + ex);
                 errorMsg.append(String.format("Parse data \"%s\", \"%s\" to list failed.\n", expObj.toString(), atlObj.toString()) + ex);
             }
-            //logger.info(String.format("Start to compare List %s. Expected: \"%s\", Actual \"%s\".", index, expObjList, atlObjList));
             compareList(expObjList, atlObjList, pkMap, noCompareItemMap);
         }
         else
@@ -79,9 +76,7 @@ public class VerifyUtil {
                 Object cAtlObj = ServiceAccess.execMethod(atlObj, fieldSetMet);
                 Object cExpObj = ServiceAccess.execMethod(expObj, fieldSetMet);
                 index.push(f.getName());
-                //logger.info(String.format("Start to compare field \"%s\".  Expected: \"%s\", Actual \"%s\".", index, expObj, atlObj));
                 if(!equals(cExpObj, cAtlObj, pkMap, noCompareItemMap)) {
-                    //logger.error(String.format("Index: %s expected: \"%s\" not equals with actual: \"%s\".", index, cExpObj, cAtlObj));
                     errorMsg.append(String.format("Index: %s expected: \"%s\" not equals with actual: \"%s\".\n", index, cExpObj, cAtlObj));
                 }
                 else {
@@ -106,7 +101,6 @@ public class VerifyUtil {
         List<Object> objListCompared = new ArrayList<>();
         //如果两个List长度不相等，返回error message
         if (expObjList.size() != atlObjList.size()) {
-            //logger.error(String.format("List %s length not mathched. Expected: \"%d\", Actual \"%d\" Expected List: \"%s\", Actual List \"%s\".", index, expObjList.size(), atlObjList.size(), expObjList, atlObjList));
             errorMsg.append(String.format("List %s length not mathched. Expected: \"%d\", Actual \"%d\" Expected List: \"%s\", Actual List \"%s\".\n", index, expObjList.size(), atlObjList.size(), expObjList, atlObjList));
         }
         //循环遍历exp List
@@ -116,10 +110,10 @@ public class VerifyUtil {
             List<String> pkList = pkMap.get(expObjItem.getClass().getSimpleName());
             List<String> noCompareItemList = noCompareItemMap.get(expObjItem.getClass().getSimpleName());
             for (Object atlObjItem : atlObjList) {
-                List<Field> primaryFields = ServiceAccess.getPrimaryFields(expObjItem, pkList);
+                List<Object> primaryFields = ServiceAccess.getPrimaryFields(expObjItem, pkList);
                 if (primaryFields.size() > 0) {
                     //根据实体主键对比实体，如果不相等则continue
-                    if (!compareObjWithSpecificCol(expObjItem, atlObjItem, primaryFields)) {
+                    if (!compareObjWithSpecificCol(expObjItem, atlObjItem, pkList)) {
                         i++;
                         continue;
                     }
@@ -135,9 +129,7 @@ public class VerifyUtil {
                         Object atlObj = ServiceAccess.execMethod(atlObjItem, fieldSetMet);
                         Object expObj = ServiceAccess.execMethod(expObjItem, fieldSetMet);
                         index.push(f.getName());
-                        //logger.info(String.format("Start to compare field %s. Expected: \"%s\", Actual \"%s\".", index, expObj, atlObj));
                         if(!equals(expObj, atlObj, pkMap, noCompareItemMap)) {
-                            //logger.error(String.format("Index: %s expected: \"%s\" not equals with actual: \"%s\".", index, expObj, atlObj));
                             errorMsg.append(String.format("Index: %s expected: \"%s\" not equals with actual: \"%s\".\n", index, expObj, atlObj));
                         }
                         else
@@ -159,7 +151,7 @@ public class VerifyUtil {
             //如果预期值在实际值的objList中不存在
             if (atlObjList.size() == i)
             {
-                errorMsg.append(String.format("Entity: \"%s\" with primary key: \"%s\" actual value not found.\n", expObjItem, ServiceAccess.getPrimaryFieldsStrViaList(pkList)));
+                errorMsg.append(String.format("Entity: \"%s\" with primary key: \"%s\" value \"%s\" actual value. not found.\n", expObjItem, ServiceAccess.getPrimaryFieldsStrViaList(pkList), ServiceAccess.getPrimaryFields(expObjItem, pkList)));
             }
         }
 
@@ -169,7 +161,7 @@ public class VerifyUtil {
             {
                 //获取主键List
                 List<String> pkList = pkMap.get(leftObj.getClass().getSimpleName());
-                errorMsg.append(String.format("Entity: \"%s\" with primary key: \"%s\" expect value not found.\n", leftObj, ServiceAccess.getPrimaryFieldsStrViaList(pkList)));
+                errorMsg.append(String.format("Entity: \"%s\" with primary key: \"%s\" value \"%s\" expect value. not found.\n", leftObj, ServiceAccess.getPrimaryFieldsStrViaList(pkList), ServiceAccess.getPrimaryFields(leftObj, pkList)));
             }
         }
     }
@@ -179,13 +171,13 @@ public class VerifyUtil {
      *
      * @param obj1 对比的第一个实体
      * @param obj2 对比的第二个实体
-     * @param fields 需要对比的属性List
+     * @param fieldPaths 需要对比的属性List
      * @return boolean 是否相等
      */
-    public boolean compareObjWithSpecificCol(Object obj1, Object obj2, List<Field> fields)
+    public boolean compareObjWithSpecificCol(Object obj1, Object obj2, List<String> fieldPaths)
     {
         boolean ret = true;
-        for (Field field : fields)
+        for (String field : fieldPaths)
         {
             if(!ConversionUtil.DBValEquals(ServiceAccess.reflectField(obj1, field), ServiceAccess.reflectField(obj2, field)))
             {
