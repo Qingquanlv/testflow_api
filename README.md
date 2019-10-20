@@ -3,13 +3,31 @@
 
 
 ### introduction：
-随着测试场景的复杂性和测试数据的多样性增加，仅仅通过发送Request对比固定Responce的方式已经很难满足现有接口测试需求。所以这个时候你需要testflow_API。
+随着测试场景的复杂性和测试数据的多样性增加，仅仅通过发送Request对比固定Responce的方式已经很难满足现有接口测试需求。所以这个时候你需要End-TO-End测试模式的testflow_api.
+
+测试架构流程（测试架构流程）：
 
 
 #### testflow_API的优势：
 
-#### 1. 易用性
-一行代码搞定接口测试：
+#### 1. 行为模式封装
+Testflow_api目前支持两种模式，junit模式和XML模式。
+
+##### junit模式：
+```java
+TestFlowManager.runner().sendRequest("",
+                "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01",
+                "weather");
+```
+##### xml模式：
+```ruby
+Scenario: Query weather
+  #查询北京地区天气 
+    When I send JSON request "" to url "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01" get "weather"
+```
+
+#### 2. 易用性
+Maven导入，一行代码搞定接口测试：
 
 ```java
 TestFlowManager.runner().sendRequest("",
@@ -19,38 +37,36 @@ TestFlowManager.runner().sendRequest("",
                         "Beijing");
 ```
 
-#### 2. 可读性
-方法根据具体执行动作进行封装，无缝接入Cucumber
-
-##### junit模式：
-```java
+```xml
 TestFlowManager.runner().sendRequest("",
                 "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01",
-                "weather");
-```
-##### Cucumber模式：
-```ruby
-Scenario: Query weather
-  #查询北京地区天气 
-    When I send JSON request "" to url "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01" get "weather"
-```
-
-#### 3. 上下文功能
-每个步骤执行后都会把执行结果转化为JSON格式存入缓存，后续步骤使用key查询缓存进行后续处理（支持通过Xpath获取缓存中JSON特定字段值）。
-
-```java
-//缓存中获取的key值${weather1:/HeWeather6/*[0]/basic/location}
-TestFlowManager.runner().sendRequest("",
-                "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01",
-                "weather1").sendRequest("",
-                        "https://free-api.heweather.net/s6/weather/forecast?location=${weather1:/HeWeather6/*[0]/basic/location}&key=245b7545b69b4b4a9bc2a7e497a88b01",
-                        "weather2").verify("weather2",
+                "weather").verify("weather",
                         "/HeWeather6/*[0]/basic/location",
                         "Beijing");
 ```
 
-#### 4. Parse方法
+#### 3. 支持Http(s)请求
+Maven导入，一行代码搞定接口测试：
+
+```java
+TestFlowManager.runner().sendRequest("",
+                "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01",
+                "weather").verify("weather",
+                        "/HeWeather6/*[0]/basic/location",
+                        "Beijing");
+```
+
+```xml
+TestFlowManager.runner().sendRequest("",
+                "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01",
+                "weather").verify("weather",
+                        "/HeWeather6/*[0]/basic/location",
+                        "Beijing");
+```
+
+#### 4. End-TO-End测试
 使用parse方法可以对缓存中的数据进行更复杂的处理，支持处理后存入缓存
+每个步骤执行后都会把执行结果转化为JSON格式存入缓存，后续步骤使用key查询缓存进行后续处理（支持通过Xpath获取缓存中JSON特定字段值）。
 
 ##### 子类重写的方式：
 ```java
@@ -64,6 +80,18 @@ TestFlowManager.runner().sendRequest("",
                 return tar;
             }
         })
+```
+
+
+```java
+//缓存中获取的key值${weather1:/HeWeather6/*[0]/basic/location}
+TestFlowManager.runner().sendRequest("",
+                "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01",
+                "weather1").sendRequest("",
+                        "https://free-api.heweather.net/s6/weather/forecast?location=${weather1:/HeWeather6/*[0]/basic/location}&key=245b7545b69b4b4a9bc2a7e497a88b01",
+                        "weather2").verify("weather2",
+                        "/HeWeather6/*[0]/basic/location",
+                        "Beijing");
 ```
 
 ##### 反射文件的方式：
@@ -87,7 +115,7 @@ TestFlowManager.runner().sendRequest("",
         )
 ```
 
-#### 5. 多样的对比方法
+#### 5. 多样的断言方法
 
 ##### 验证实体中任一字段值：
 
@@ -111,6 +139,10 @@ verify("weather1", "weather2");
                 "Daily_forecast:{wind_dir}") //对比实体中不对比字段
 ```
 
+#### 5. 支持数据驱动
+
+#### 5. 支持DataBase操作
+
 ##  Documentation：
 
 #### Getting Statted
@@ -124,7 +156,10 @@ verify("weather1", "weather2");
 </dependency>
 ```
 
-#### Junit模式/Cucumber模式
+#### Junit模式/xml模式
+
+Junit模式链接：
+XML模式链接：
 
 Junit：
 
