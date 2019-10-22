@@ -109,16 +109,113 @@ public class Parser {
         JavaStringCompiler compiler = new JavaStringCompiler();
         //获取需要转化的类名和函数名
         String className = Constants.PARSE_VALUE_FILE_NAME;
+
         try {
-            Class<?> sourceDataParamTypeClazz = ServiceAccess.reflectClazz(sourceDataParamType);
-            Object sourceParame = FastJsonUtil.toBean(BufferManager.getBufferByKey(sourceData), sourceDataParamTypeClazz);
-            String convertFileSource = Constants.PARSE_VALUE_FILE_SOURCE.replace(Constants.PARAMTYPE1, sourceDataParamType)
-                    .replace(Constants.PARAMTYPE2, targetDataParamType)
+            Object sourceParam = getParameType(sourceData, sourceDataParamType);
+            Class<?> sourceParamReflectType = getParameReflectType(sourceDataParamType);
+            String convertFileSource = Constants.PARSE_VALUE_FILE_SOURCE.replace(Constants.PARAMTYPE1, getParameImportType(sourceDataParamType))
+                    .replace(Constants.PARAMTYPE2, getParameImportType(targetDataParamType))
                     .replace(Constants.METHOD, convertMethodSource);
             Map<String, byte[]> results = compiler.compile(className, convertFileSource);
             Class<?> clazz = compiler.loadClass(Constants.SERVICES_CLASS_PATH, results);
-            Method fieldGetMet =  ServiceAccess.reflectMethod(clazz, convertMethodName, sourceDataParamTypeClazz);
-            targetJson = FastJsonUtil.toJson(fieldGetMet.invoke(clazz.newInstance(), sourceParame));
+            Method fieldGetMet =  ServiceAccess.reflectMethod(clazz, convertMethodName, sourceParamReflectType);
+            targetJson = FastJsonUtil.toJson(fieldGetMet.invoke(clazz.newInstance(), sourceParam));
+        } catch (Exception e) {
+            System.out.println("执行Convert方法错误" + e);
+        }
+        return targetJson;
+    }
+
+    /**
+     * 根据Buffer中保存的实体，构建实体Json
+     *
+     */
+    public String parseValueVidStr(String convertMethodSource, String convertMethodName, String sourceData, String sourceDataParamType, String sourceData2, String sourceDataParamType2, String targetDataParamType) throws Exception
+    {
+        String targetJson = "";
+        //初始化JavaCompliler(生成文件)
+        JavaStringCompiler compiler = new JavaStringCompiler();
+        //获取需要转化的类名和函数名
+        String className = Constants.PARSE_VALUE_FILE_NAME;
+
+        try {
+            Object sourceParam = getParameType(sourceData, sourceDataParamType);
+            Class<?> sourceParamReflectType = getParameReflectType(sourceDataParamType);
+            Object sourceParam2 = getParameType(sourceData2, sourceDataParamType2);
+            Class<?> sourceParamReflectType2 = getParameReflectType(sourceDataParamType2);
+            String convertFileSource = Constants.PARSE_VALUE_FILE_SOURCE.replace(Constants.PARAMTYPE1, getParameImportType(sourceDataParamType))
+                    .replace(Constants.PARAMTYPE2, getParameImportType(targetDataParamType))
+                    .replace(Constants.METHOD, convertMethodSource);
+            Map<String, byte[]> results = compiler.compile(className, convertFileSource);
+            Class<?> clazz = compiler.loadClass(Constants.SERVICES_CLASS_PATH, results);
+            Method fieldGetMet =  ServiceAccess.reflectMethod(clazz, convertMethodName, sourceParamReflectType, sourceParamReflectType2);
+            targetJson = FastJsonUtil.toJson(fieldGetMet.invoke(clazz.newInstance(), sourceParam, sourceParam2));
+        } catch (Exception e) {
+            System.out.println("执行Convert方法错误" + e);
+        }
+        return targetJson;
+    }
+
+    /**
+     * 根据Buffer中保存的实体，构建实体Json
+     *
+     */
+    public String parseValueVidStr(String convertMethodSource, String convertMethodName, String sourceData, String sourceDataParamType, String sourceData2, String sourceDataParamType2, String sourceData3, String sourceDataParamType3, String targetDataParamType) throws Exception
+    {
+        String targetJson = "";
+        //初始化JavaCompliler(生成文件)
+        JavaStringCompiler compiler = new JavaStringCompiler();
+        //获取需要转化的类名和函数名
+        String className = Constants.PARSE_VALUE_FILE_NAME;
+
+        try {
+            Object sourceParam = getParameType(sourceData, sourceDataParamType);
+            Class<?> sourceParamReflectType = getParameReflectType(sourceDataParamType);
+            Object sourceParam2 = getParameType(sourceData2, sourceDataParamType2);
+            Class<?> sourceParamReflectType2 = getParameReflectType(sourceDataParamType2);
+            Object sourceParam3 = getParameType(sourceData3, sourceDataParamType3);
+            Class<?> sourceParamReflectType3 = getParameReflectType(sourceDataParamType3);
+            String convertFileSource = Constants.PARSE_VALUE_FILE_SOURCE.replace(Constants.PARAMTYPE1, getParameImportType(sourceDataParamType))
+                    .replace(Constants.PARAMTYPE2, getParameImportType(targetDataParamType))
+                    .replace(Constants.METHOD, convertMethodSource);
+            Map<String, byte[]> results = compiler.compile(className, convertFileSource);
+            Class<?> clazz = compiler.loadClass(Constants.SERVICES_CLASS_PATH, results);
+            Method fieldGetMet =  ServiceAccess.reflectMethod(clazz, convertMethodName, sourceParamReflectType, sourceParamReflectType2, sourceParamReflectType3);
+            targetJson = FastJsonUtil.toJson(fieldGetMet.invoke(clazz.newInstance(), sourceParam, sourceParam2, sourceParam3));
+        } catch (Exception e) {
+            System.out.println("执行Convert方法错误" + e);
+        }
+        return targetJson;
+    }
+
+    /**
+     * 根据Buffer中保存的实体，构建实体Json
+     *
+     */
+    public String parseValueVidStr(String convertMethodSource, String convertMethodName, String sourceData, String sourceDataParamType, String sourceData2, String sourceDataParamType2, String sourceData3, String sourceDataParamType3, String sourceData4, String sourceDataParamType4, String targetDataParamType) throws Exception
+    {
+        String targetJson = "";
+        //初始化JavaCompliler(生成文件)
+        JavaStringCompiler compiler = new JavaStringCompiler();
+        //获取需要转化的类名和函数名
+        String className = Constants.PARSE_VALUE_FILE_NAME;
+
+        try {
+            Object sourceParam = getParameType(sourceData, sourceDataParamType);
+            Class<?> sourceParamReflectType = getParameReflectType(sourceDataParamType);
+            Object sourceParam2 = getParameType(sourceData2, sourceDataParamType2);
+            Class<?> sourceParamReflectType2 = getParameReflectType(sourceDataParamType2);
+            Object sourceParam3 = getParameType(sourceData3, sourceDataParamType3);
+            Class<?> sourceParamReflectType3 = getParameReflectType(sourceDataParamType3);
+            Object sourceParam4 = getParameType(sourceData4, sourceDataParamType4);
+            Class<?> sourceParamReflectType4 = getParameReflectType(sourceDataParamType4);
+            String convertFileSource = Constants.PARSE_VALUE_FILE_SOURCE.replace(Constants.PARAMTYPE1, getParameImportType(sourceDataParamType))
+                    .replace(Constants.PARAMTYPE2, getParameImportType(targetDataParamType))
+                    .replace(Constants.METHOD, convertMethodSource);
+            Map<String, byte[]> results = compiler.compile(className, convertFileSource);
+            Class<?> clazz = compiler.loadClass(Constants.SERVICES_CLASS_PATH, results);
+            Method fieldGetMet =  ServiceAccess.reflectMethod(clazz, convertMethodName, sourceParamReflectType, sourceParamReflectType2, sourceParamReflectType3, sourceParamReflectType4);
+            targetJson = FastJsonUtil.toJson(fieldGetMet.invoke(clazz.newInstance(), sourceParam, sourceParam2, sourceParam3, sourceParam4));
         } catch (Exception e) {
             System.out.println("执行Convert方法错误" + e);
         }
@@ -182,6 +279,9 @@ public class Parser {
                 sourceParame = JAXBUtil.formXMLList(BufferManager.getBufferByKey(parame), paramTypeClazz);
             }
         }
+        else if ("string".equals(parameType)) {
+            sourceParame = BufferManager.getBufferByKey(parame);
+        }
         else {
             paramTypeClazz = ServiceAccess.reflectClazz(parameType);
             sourceParame = FastJsonUtil.toBean(BufferManager.getBufferByKey(parame), paramTypeClazz);
@@ -195,9 +295,27 @@ public class Parser {
         if (parame.toLowerCase().contains(patten)) {
             paramTypeClazz = java.util.List.class;
         }
+        else if("string".equals(parame)) {
+            paramTypeClazz = String.class;
+        }
         else {
             paramTypeClazz = ServiceAccess.reflectClazz(parame);
         }
         return paramTypeClazz;
     }
+
+    public String getParameImportType(String parame) throws Exception {
+        String patten = "list<";
+        String paramImportType;
+        if (parame.toLowerCase().contains(patten)) {
+            paramImportType = getListItemType(parame);
+        }
+        else {
+            paramImportType = parame;
+        }
+        return paramImportType;
+    }
 }
+
+
+

@@ -38,7 +38,7 @@ public class Request {
         //保存Response到Buffer
         String requestObject = HttpClientUtil.sendHttpPost(url, requestJsonStr, CONTENT_TYPE_JSON);
         logger.info(String.format("%s Get responce: %s", new Date(), requestObject));
-        return requestObject;
+        return ParamUtil.parseJsonDate(requestObject);
     }
 
     /**
@@ -53,7 +53,7 @@ public class Request {
         //保存Response到Buffer
         String requestObject = HttpClientUtil.sendHttpPost(url, requestJsonStr, CONTENT_TYPE_JSON);
         logger.info(String.format("%s Get responce: %s", new Date(), requestObject));
-        return requestObject;
+        return ParamUtil.parseJsonDate(requestObject);
     }
 
     /**
@@ -68,7 +68,7 @@ public class Request {
         //保存Response到Buffer
         String requestObject = HttpClientUtil.sendHttpPost(url, requestXmlStr, CONTENT_TYPE_XML);
         logger.info(String.format("%s Get responce: %s", new Date(), requestObject));
-        return  requestObject;
+        return ParamUtil.parseJsonDate(requestObject);
     }
 
     /**
@@ -87,7 +87,7 @@ public class Request {
         url = ParamUtil.parseParam(url);
         logger.info(String.format("%s Url: %s", new Date(), url));
         //保存Response到Buffer
-        List<String> rsplist = HttpClientUtil.sendHttpPostList(url, requestJsonStrList, CONTENT_TYPE_JSON);
+        List<String> rsplist = HttpClientUtil.sendHttpPostList(url, list, CONTENT_TYPE_JSON);
         for (int i = 0; i < rsplist.size(); i++) {
             responceJsonStrList += rsplist.get(i);
             if (i != rsplist.size() - 1) {
@@ -96,7 +96,7 @@ public class Request {
         }
         responceJsonStrList += "]";
         logger.info(String.format("%s Get responce: %s", new Date(), responceJsonStrList));
-        return responceJsonStrList;
+        return ParamUtil.parseJsonDate(responceJsonStrList);
     }
 
     /**
@@ -121,7 +121,7 @@ public class Request {
         }
         responceJsonStrList += "</ListRoot>";
         logger.info(String.format("%s Get responce: %s", new Date(), responceJsonStrList));
-        return responceJsonStrList;
+        return ParamUtil.parseJsonDate(responceJsonStrList);
     }
 
     /**
@@ -134,7 +134,7 @@ public class Request {
         //保存Response到Buffer
         String responceObject = HttpClientUtil.sendHttpGet(url);
         logger.info(String.format("%s Get responce: %s", new Date(), responceObject));
-        return responceObject;
+        return ParamUtil.parseJsonDate(responceObject);
     }
 
     /**
@@ -147,7 +147,7 @@ public class Request {
         //保存Response到Buffer
         String responceObject = HttpClientUtil.sendHttpHead(url);
         logger.info(String.format("%s Get responce: %s", new Date(), responceObject));
-        return responceObject;
+        return ParamUtil.parseJsonDate(responceObject);
     }
 
     /**
@@ -162,7 +162,7 @@ public class Request {
         //保存Response到Buffer
         String responceObject = HttpClientUtil.sendHttpPutJson(url, requestJsonStr, CONTENT_TYPE_JSON);
         logger.info(String.format("%s Get responce: %s", new Date(), responceObject));
-        return responceObject;
+        return ParamUtil.parseJsonDate(responceObject);
     }
 
     /**
@@ -177,7 +177,7 @@ public class Request {
         //保存Response到Buffer
         String responceObject = HttpClientUtil.sendHttpPutJson(url, requestJsonStr, CONTENT_TYPE_XML);
         logger.info(String.format("%s Get responce: %s", new Date(), responceObject));
-        return responceObject;
+        return ParamUtil.parseJsonDate(responceObject);
     }
 
     /**
@@ -205,7 +205,7 @@ public class Request {
         }
         responceJsonStrList += "]";
         logger.info(String.format("%s Get responce: %s", new Date(), responceJsonStrList));
-        return responceJsonStrList;
+        return ParamUtil.parseJsonDate(responceJsonStrList);
     }
 
     /**
@@ -218,7 +218,7 @@ public class Request {
         //保存Response到Buffer
         String responceObject = HttpClientUtil.sendHttpDelete(url);
         logger.info(String.format("%s Get responce: %s", new Date(), responceObject));
-        return responceObject;
+        return ParamUtil.parseJsonDate(responceObject);
     }
 
     /**
@@ -231,7 +231,7 @@ public class Request {
         //保存Response到Buffer
         String responceObject = HttpClientUtil.sendHttpOptions(url);
         logger.info(String.format("%s Get responce: %s", new Date(), responceObject));
-        return responceObject;
+        return ParamUtil.parseJsonDate(responceObject);
     }
 
     /**
@@ -244,7 +244,7 @@ public class Request {
         //保存Response到Buffer
         String responceObject = HttpClientUtil.sendHttpTrace(url);
         logger.info(String.format("%s Get responce: %s", new Date(), responceObject));
-        return responceObject;
+        return ParamUtil.parseJsonDate(responceObject);
     }
 
     /**
@@ -259,7 +259,7 @@ public class Request {
         logger.info(String.format("%s Url: %s", new Date(), url));
         String responceObject = HttpClientUtil.sendHttpPost(url, requestJsonStr, CONTENT_TYPE_JSON);
         logger.info(String.format("%s Get responce: %s", new Date(), responceObject));
-        return responceObject;
+        return ParamUtil.parseJsonDate(responceObject);
     }
 
     /**

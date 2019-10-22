@@ -26,11 +26,11 @@ public class LogHelper {
             param +=stepParam[i] + ",";
         }
         logger.info(String.format("*********************************************************************************************************************************************************************************************************"));
-        logger.info(String.format("%s Start execute %s step: step Name \'%s\' step Param \'%s\'.", new Date(), index, stepName, param));
+        logger.info(String.format("Start execute %s step: step Name \'%s\' step Param \'%s\'.", index, stepName, param));
     }
 
     public static void stepAfterLog(String stepName, String buffer) {
-        logger.info(String.format("%s Step %s Passed: step Name\'%s\' buffer \'%s\'.", new Date(), index, stepName, buffer));
+        logger.info(String.format("Step %s Passed: buffer key\'%s\' buffer \'%s\'.", index, stepName, buffer));
         index ++;
     }
 }

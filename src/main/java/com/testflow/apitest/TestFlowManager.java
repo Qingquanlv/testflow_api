@@ -68,7 +68,7 @@ public class TestFlowManager {
             deposed();
             throw new AssertionError(String.format("send Request failed: %s", ex));
         }
-        LogHelper.stepAfterLog("sendRequest", responceStr);
+        LogHelper.stepAfterLog(responce, responceStr);
         return this;
     }
 
@@ -91,7 +91,7 @@ public class TestFlowManager {
             deposed();
             throw new AssertionError(String.format("send Post Request failed: %s", ex));
         }
-        LogHelper.stepAfterLog("sendPostRequest", responceStr);
+        LogHelper.stepAfterLog(responce, responceStr);
         return this;
     }
 
@@ -114,7 +114,7 @@ public class TestFlowManager {
             deposed();
             throw new AssertionError(String.format("send Post Request failed: %s", ex));
         }
-        LogHelper.stepAfterLog("sendPostRequestXML", responceStr);
+        LogHelper.stepAfterLog(responce, responceStr);
         return this;
     }
 
@@ -137,7 +137,7 @@ public class TestFlowManager {
             deposed();
             throw new AssertionError(String.format("send Post Request failed: %s", ex));
         }
-        LogHelper.stepAfterLog("sendBatchPostRequest", responceStr);
+        LogHelper.stepAfterLog(responce, responceStr);
         return this;
     }
 
@@ -160,7 +160,7 @@ public class TestFlowManager {
             deposed();
             throw new AssertionError(String.format("send Post Request failed: %s", ex));
         }
-        LogHelper.stepAfterLog("sendBatchPostRequestXML", responceStr);
+        LogHelper.stepAfterLog(responce, responceStr);
         return this;
     }
 
@@ -182,7 +182,7 @@ public class TestFlowManager {
             deposed();
             throw new AssertionError(String.format("send Get Request failed: %s", ex));
         }
-        LogHelper.stepAfterLog("sendGetRequest", responceStr);
+        LogHelper.stepAfterLog(responce, responceStr);
         return this;
     }
 
@@ -204,7 +204,7 @@ public class TestFlowManager {
             deposed();
             throw new AssertionError(String.format("send head Request failed: %s", ex));
         }
-        LogHelper.stepAfterLog("sendHeadRequest", responceStr);
+        LogHelper.stepAfterLog(responce, responceStr);
         return this;
     }
 
@@ -226,7 +226,7 @@ public class TestFlowManager {
             deposed();
             throw new AssertionError(String.format("send put Request failed: %s", ex));
         }
-        LogHelper.stepAfterLog("sendPutRequest", responceStr);
+        LogHelper.stepAfterLog(responce, responceStr);
         return this;
     }
 
@@ -248,7 +248,7 @@ public class TestFlowManager {
             deposed();
             throw new AssertionError(String.format("send put Request failed: %s", ex));
         }
-        LogHelper.stepAfterLog("sendPutRequestXML", responceStr);
+        LogHelper.stepAfterLog(responce, responceStr);
         return this;
     }
 
@@ -271,7 +271,7 @@ public class TestFlowManager {
             deposed();
             throw new AssertionError(String.format("send Post Request failed: %s", ex));
         }
-        LogHelper.stepAfterLog("sendBatchPutRequest", responceStr);
+        LogHelper.stepAfterLog(responce, responceStr);
         return this;
     }
 
@@ -293,7 +293,7 @@ public class TestFlowManager {
             deposed();
             throw new AssertionError(String.format("send Delete Request failed: %s", ex));
         }
-        LogHelper.stepAfterLog("sendDeleteRequest", responceStr);
+        LogHelper.stepAfterLog(responce, responceStr);
         return this;
     }
 
@@ -315,7 +315,7 @@ public class TestFlowManager {
             deposed();
             throw new AssertionError(String.format("send Options Request failed: %s", ex));
         }
-        LogHelper.stepAfterLog("sendOptionsRequest", responceStr);
+        LogHelper.stepAfterLog(responce, responceStr);
         return this;
     }
 
@@ -337,7 +337,7 @@ public class TestFlowManager {
             deposed();
             throw new AssertionError(String.format("send Trace Request failed: %s", ex));
         }
-        LogHelper.stepAfterLog("sendTraceRequest", responceStr);
+        LogHelper.stepAfterLog(responce, responceStr);
         return this;
     }
 
@@ -413,7 +413,7 @@ public class TestFlowManager {
             deposed();
             throw new AssertionError(String.format("send Request failed: %s", ex));
         }
-        LogHelper.stepAfterLog("sendRequest", responceStr);
+        LogHelper.stepAfterLog(responce, responceStr);
         return this;
     }
 
@@ -427,7 +427,7 @@ public class TestFlowManager {
      * @param targetParamType : parse返回值类型
      *
      */
-    public TestFlowManager sourceParse(String convertMethodSource, String convertMethodName, String sourceParemKey, String sourceParamType, String targetParemKey, String targetParamType) {
+    public TestFlowManager sourceParse(String convertMethodSource, String convertMethodName, String sourceParemKey, String sourceParamType, String targetParamType, String targetParemKey) {
         Parser parser = new Parser();
         String str;
         LogHelper.stepExecLog("sourceParse", convertMethodSource, convertMethodName, sourceParemKey, sourceParamType, targetParemKey, targetParamType);
@@ -439,7 +439,97 @@ public class TestFlowManager {
             deposed();
             throw new AssertionError(String.format("Init object failed"));
         }
-        LogHelper.stepAfterLog("sourceParse", str);
+        LogHelper.stepAfterLog(targetParemKey, str);
+        return this;
+    }
+
+    /**
+     *
+     * @param convertMethodSource : parse函数字符串
+     * @param convertMethodName : parse函数name
+     * @param sourceParemKey : parse入参缓存Key
+     * @param sourceParamType : parse入参类型
+     * @param sourceParemKey2 : parse入参缓存Key2
+     * @param sourceParamType2 : parse入参类型2
+     * @param targetParemKey : parse函数返回值Key
+     * @param targetParamType : parse返回值类型
+     * @return
+     */
+    public TestFlowManager sourceParse(String convertMethodSource, String convertMethodName, String sourceParemKey, String sourceParamType, String sourceParemKey2, String sourceParamType2, String targetParamType, String targetParemKey) {
+        Parser parser = new Parser();
+        String str;
+        LogHelper.stepExecLog("sourceParse", convertMethodSource, convertMethodName, sourceParemKey, sourceParamType, targetParemKey, targetParamType);
+        try {
+            str = parser.parseValueVidStr(convertMethodSource, convertMethodName, sourceParemKey, sourceParamType, sourceParemKey2, sourceParamType2, targetParamType);
+            BufferManager.addBufferByKey(targetParemKey, str);
+        }
+        catch (Exception ex) {
+            deposed();
+            throw new AssertionError(String.format("Init object failed"));
+        }
+        LogHelper.stepAfterLog(targetParemKey, str);
+        return this;
+    }
+
+    /**
+     * 使用String格式函数Parse
+     * @param convertMethodSource : parse函数字符串
+     * @param convertMethodName : parse函数name
+     * @param sourceParemKey : parse入参缓存Key
+     * @param sourceParamType : parse入参类型
+     * @param sourceParemKey2 : parse入参缓存Key2
+     * @param sourceParamType2 : parse入参类型2
+     * @param sourceParemKey3 : parse入参缓存Key3
+     * @param sourceParamType3 : parse入参类型3
+     * @param targetParemKey : parse函数返回值Key
+     * @param targetParamType : parse返回值类型
+     *
+     */
+    public TestFlowManager sourceParse(String convertMethodSource, String convertMethodName, String sourceParemKey, String sourceParamType, String sourceParemKey2, String sourceParamType2, String sourceParemKey3, String sourceParamType3, String targetParamType, String targetParemKey) {
+        Parser parser = new Parser();
+        String str;
+        LogHelper.stepExecLog("sourceParse", convertMethodSource, convertMethodName, sourceParemKey, sourceParamType, sourceParemKey2, sourceParamType2, sourceParemKey3, sourceParamType3, targetParamType);
+        try {
+            str = parser.parseValueVidStr(convertMethodSource, convertMethodName, sourceParemKey, sourceParamType, sourceParemKey2, sourceParamType2, sourceParemKey3, sourceParamType3, targetParamType);
+            BufferManager.addBufferByKey(targetParemKey, str);
+        }
+        catch (Exception ex) {
+            deposed();
+            throw new AssertionError(String.format("Init object failed"));
+        }
+        LogHelper.stepAfterLog(targetParemKey, str);
+        return this;
+    }
+
+    /**
+     * 使用String格式函数Parse
+     * @param convertMethodSource : parse函数字符串
+     * @param convertMethodName : parse函数name
+     * @param sourceParemKey : parse入参缓存Key
+     * @param sourceParamType : parse入参类型
+     * @param sourceParemKey2 : parse入参缓存Key2
+     * @param sourceParamType2 : parse入参类型2
+     * @param sourceParemKey3 : parse入参缓存Key3
+     * @param sourceParamType3 : parse入参类型3
+     * @param sourceParemKey4 : parse入参缓存Key4
+     * @param sourceParamType4 : parse入参类型4
+     * @param targetParemKey : parse函数返回值Key
+     * @param targetParamType : parse返回值类型
+     *
+     */
+    public TestFlowManager sourceParse(String convertMethodSource, String convertMethodName, String sourceParemKey, String sourceParamType, String sourceParemKey2, String sourceParamType2, String sourceParemKey3, String sourceParamType3, String sourceParemKey4, String sourceParamType4, String targetParamType, String targetParemKey) {
+        Parser parser = new Parser();
+        String str;
+        LogHelper.stepExecLog("sourceParse", convertMethodSource, convertMethodName, sourceParemKey, sourceParamType, sourceParemKey2, sourceParamType2, sourceParemKey3, sourceParamType3, sourceParemKey4, sourceParamType4, targetParamType);
+        try {
+            str = parser.parseValueVidStr(convertMethodSource, convertMethodName, sourceParemKey, sourceParamType, sourceParemKey2, sourceParamType2, sourceParemKey3, sourceParamType3, sourceParemKey4, sourceParamType4, targetParamType);
+            BufferManager.addBufferByKey(targetParemKey, str);
+        }
+        catch (Exception ex) {
+            deposed();
+            throw new AssertionError(String.format("Init object failed"));
+        }
+        LogHelper.stepAfterLog(targetParemKey, str);
         return this;
     }
 
@@ -464,7 +554,7 @@ public class TestFlowManager {
             deposed();
             throw new AssertionError(String.format("Reflect method \"%s\" failed: " + ex, convertMethodName));
         }
-        LogHelper.stepAfterLog("reflectParse", str);
+        LogHelper.stepAfterLog(targetParemKey, str);
         return this;
     }
 
@@ -490,7 +580,7 @@ public class TestFlowManager {
             deposed();
             throw new AssertionError(String.format("Reflect method \"%s\" failed: " + ex, convertMethodName));
         }
-        LogHelper.stepAfterLog("reflectParse", str);
+        LogHelper.stepAfterLog(targetParemKey, str);
         return this;
     }
 
@@ -518,7 +608,7 @@ public class TestFlowManager {
             deposed();
             throw new AssertionError(String.format("Reflect method \"%s\" failed: " + ex, convertMethodName));
         }
-        LogHelper.stepAfterLog("reflectParse", str);
+        LogHelper.stepAfterLog(targetParemKey, str);
         return this;
     }
 
@@ -548,7 +638,7 @@ public class TestFlowManager {
             deposed();
             throw new AssertionError(String.format("Reflect method \"%s\" failed: " + ex, convertMethodName));
         }
-        LogHelper.stepAfterLog("reflectParse", str);
+        LogHelper.stepAfterLog(targetParemKey, str);
         return this;
     }
 
@@ -580,7 +670,7 @@ public class TestFlowManager {
             deposed();
             throw new AssertionError(String.format("Reflect method \"%s\" failed: " + ex, convertMethodName));
         }
-        LogHelper.stepAfterLog("reflectParse", str);
+        LogHelper.stepAfterLog(targetParemKey, str);
         return this;
     }
 
@@ -603,7 +693,7 @@ public class TestFlowManager {
             deposed();
             throw new AssertionError(String.format("Parse object \"%s\" failed: " + ex, targeParemtKey));
         }
-        LogHelper.stepAfterLog("overrideParse", str);
+        LogHelper.stepAfterLog(targeParemtKey, str);
         return this;
     }
 
@@ -627,7 +717,7 @@ public class TestFlowManager {
             deposed();
             throw new AssertionError(String.format("Parse object \"%s\" failed: " + ex, targeParemtKey));
         }
-        LogHelper.stepAfterLog("overrideParse", str);
+        LogHelper.stepAfterLog(targeParemtKey, str);
         return this;
     }
 
@@ -673,13 +763,13 @@ public class TestFlowManager {
      *
      */
     public TestFlowManager verify(String expObj, String atlObj) {
+        Verify verify = new Verify();
         LogHelper.stepExecLog("verify", expObj, atlObj);
         try {
-            String expStr = BufferManager.getBufferByKey(expObj);
-            String atlStr = BufferManager.getBufferByKey(atlObj);
-            if (!expStr.equals(atlStr)) {
+            String errorMsg = verify.verify(expObj, expObj);
+            if (!"".equals(errorMsg)) {
                 deposed();
-                throw new AssertionError(String.format("\n" + "expected: \"%s\" not equals with actual: \"%s\".\n", expStr, atlStr));
+                throw new AssertionError(String.format("\n" + errorMsg));
             }
         }
         catch (Exception ex) {
@@ -758,7 +848,30 @@ public class TestFlowManager {
             deposed();
             throw new AssertionError(String.format("Query datebase failed: " + ex));
         }
-        LogHelper.stepAfterLog("queryDataBase", str);
+        LogHelper.stepAfterLog(bufferKey, str);
+        return this;
+    }
+
+    /**
+     * 通过原生SQL语句查询DB
+     *
+     * @param bufferKey 缓存key
+     * @param sql sql map 参数
+     * @return
+     */
+    public TestFlowManager queryDataBase(String bufferKey, String sql) {
+        Database database= new Database();
+        String str;
+        LogHelper.stepExecLog("queryDataBase", bufferKey, sql);
+        try {
+            str = database.queryDataBase(sql);
+            BufferManager.addBufferByKey(bufferKey, str);
+        }
+        catch (Exception ex) {
+            deposed();
+            throw new AssertionError(String.format("Query datebase failed: " + ex));
+        }
+        LogHelper.stepAfterLog(bufferKey, str);
         return this;
     }
 }

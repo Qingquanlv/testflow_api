@@ -25,11 +25,13 @@ import java.util.regex.Pattern;
 public class ParamUtil {
     private static Logger logger = LoggerFactory.getLogger(ParamUtil.class);
     public static Pattern paramPattern = Pattern.compile("\\$\\{.*?\\}");
+    public static Pattern paramPatternNoXPath = Pattern.compile("\\$P\\{.*?\\}");
     public static Pattern listParamPattern = Pattern.compile("\\$L\\{.*?\\}");
     public static Pattern mapPatternStr = Pattern.compile("^\\{(.*?)\\}$");
 
     public static String patternStr = ".*\\$\\{(.*?)\\}.*";
     public static String listPatternStr = ".*\\$L\\{(.*?)\\}.*";
+    public static String patternStrNoXPath = ".*\\$P\\{(.*?)\\}.*";
 
     /**
      * 根据匹配Josn，构建多个的请求
@@ -39,32 +41,59 @@ public class ParamUtil {
      */
     public static List<String> parseParamList(String val) throws Exception
     {
+        val = parseEnter(val);
         //List情况requst只能存在一个参数, 若为多个默认取第一个
         List<String> paramList = catchParamList(listParamPattern, val);
         List<String> reqList = new ArrayList<>();
-        String param = "";
-        if (null != paramList && !paramList.isEmpty()) {
-            param = paramList.get(0);
-        }
-
-        //去掉参数中的大括号
-        String paramCoverted = convertParam(listPatternStr, param);
-        String[] bufferKeyAndValue = getBufferKeyAndValue(paramCoverted);
-        //从缓存中获取数据
-        String str = BufferManager.getBufferByKey(bufferKeyAndValue[0]);
-        List<Object> objList = getMapValFromStr(str, bufferKeyAndValue[1]);
-        if (null == objList || objList.isEmpty()) {
-            System.out.println(String.format("No matiched value for key \"%s\" Json string \"%s\" .", bufferKeyAndValue[1], str));
-        }
-        else {
-            for (Object strItem : objList) {
-                reqList.add(updateParameStr(val, param, strItem.toString()));
+        for (String param : paramList) {
+            if (!paramList.isEmpty()) {
+                //去掉参数中的大括号
+                String paramCoverted = convertParam(listPatternStr, param);
+                String[] bufferKeyAndValue = getBufferKeyAndValue(paramCoverted);
+                //从缓存中获取数据
+                String str = BufferManager.getBufferByKey(bufferKeyAndValue[0]);
+                List<Object> objList = getMapValFromStr(str, bufferKeyAndValue[1]);
+                if (null == objList || objList.isEmpty()) {
+                    System.out.println(String.format("No matiched value for key \"%s\" Json string \"%s\" .", bufferKeyAndValue[1], str));
+                }
+                else {
+                    for (int i = 0; i< objList.size() ; i++) {
+                        if (reqList.size() > i + 1) {
+                            updateParameStr(reqList.get(i),param, objList.get(i).toString());
+                        }
+                        else {
+                            reqList.add(updateParameStr(val, param, objList.get(i).toString()));
+                        }
+                    }
+                }
             }
         }
         return reqList;
     }
 
+    /**
+     * 转化字符串中参数
+     *
+     * @param val
+     * @return
+     * @throws Exception
+     */
     public static String parseParam(String val) throws Exception
+    {
+        val = parseParamXpath(val);
+        val = parseParamNoXpath(val);
+        val = parseEnter(val);
+        return val;
+    }
+
+    /**
+     * 转化字符串中Xpath类型参数
+     *
+     * @param val
+     * @return
+     * @throws Exception
+     */
+    public static String parseParamXpath(String val) throws Exception
     {
         //获取字符串中所有参数
         List<String> paramList = catchParamList(paramPattern, val);
@@ -84,6 +113,44 @@ public class ParamUtil {
             }
         }
         return val;
+    }
+
+    /**
+     * 转化字符串中非Xpath类型参数
+     *
+     * @param val
+     * @return
+     * @throws Exception
+     */
+    public static String parseParamNoXpath(String val) throws Exception
+    {
+        //获取字符串中所有参数
+        List<String> paramList = catchParamList(paramPatternNoXPath, val);
+        for(String param : paramList)
+        {
+            //转化参数为某缓存内的实体的属性值
+            String paramCoverted = convertParam(patternStrNoXPath, param);
+            String str = BufferManager.getBufferByKey(paramCoverted);
+            if (paramCoverted==null || paramCoverted.length() == 0) {
+                throw new Exception(String.format("No matiched value for key \"%s\"  string \"%s\" .", param, str));
+            }
+            else {
+                val = updateParameStr(val, param, str);
+            }
+        }
+        return val;
+    }
+
+    /**
+     * 去除字符串中的换行符
+     *
+     * @param val
+     * @return
+     * @throws Exception
+     */
+    public static String parseEnter(String val) throws Exception
+    {
+        return val.replace("\n", "").replace("\r", "").replace("\t", "");
     }
 
     /**
@@ -239,7 +306,7 @@ public class ParamUtil {
     {
         String[] keyList = mapKey.split("\\/");
         for (String key : keyList) {
-            if (!"".equals(key) || null != key) {
+            if (!"".equals(key)) {
                 if ("".equals(isListItem(key))) {}
                 Method fieldSetMet = getValueViaGetMet(key, obj);
                 obj = ServiceAccess.execMethod(obj, fieldSetMet);
@@ -383,6 +450,23 @@ public class ParamUtil {
             sourceParame = FastJsonUtil.toBean(BufferManager.getBufferByKey(parame), paramTypeClazz);
         }
         return sourceParame;
+    }
+
+    public static String parseJsonDate(String str) {
+        String pattern ="\\\\?\\/Date\\(([\\+\\-]?[0-9]{12,15})[\\+\\-][0-9]{4}\\)\\\\?\\/";
+        Pattern P = Pattern.compile(pattern);
+        Matcher matcher = P.matcher(str);
+
+        StringBuilder jsonStr = new StringBuilder();
+        String tempStr = "";
+        int start = 0;
+        while (matcher.find(start)) {
+            tempStr = str.substring(start, matcher.end());
+            jsonStr.append(tempStr.replaceFirst(pattern, "$1"));
+            start = matcher.end();
+        }
+        jsonStr.append(str.substring(start, str.length()));
+        return jsonStr.toString();
     }
 
 }

@@ -5,6 +5,7 @@ import com.testflow.apitest.servicesaccess.ServiceAccess;
 import com.testflow.apitest.utilities.FastJsonUtil;
 import com.testflow.apitest.utilities.ParamUtil;
 import com.testflow.apitest.utilities.VerifyUtil;
+
 import java.util.List;
 import java.util.Map;
 
@@ -19,10 +20,14 @@ public class Verify {
      * 对比实体
      *
      */
-    public String Verify(Object expObj, Object atlObj) {
-        VerifyUtil compareUtil = new VerifyUtil();
-        compareUtil.compareEntity(expObj, atlObj);
-        return compareUtil.getErrorMsg();
+    public String verify(String expStr, String atlStr) throws Exception {
+        String errMsg = "";
+        String expObj = BufferManager.getBufferByKey(expStr);
+        String atlObj = BufferManager.getBufferByKey(atlStr);
+        if (!expObj.equals(atlObj)) {
+            errMsg = String.format("\n" + "expected: \"%s\" not equals with actual: \"%s\".\n", expStr, atlStr);
+        }
+        return errMsg;
     }
 
     /**
@@ -34,7 +39,7 @@ public class Verify {
         String atlStr = BufferManager.getBufferByKey(atlObj);
 
         List<Object> objList = ParamUtil.getMapValFromJson(atlStr, JsonFilter);
-        if (null == objList || objList.isEmpty()) {
+        if (objList == null || objList.isEmpty()) {
             throw new Exception(String.format("No matiched value for key \"%s\" Json string \"%s\" .", atlStr, JsonFilter));
         }
         if (!objList.get(0).toString().equals(expValue)) {

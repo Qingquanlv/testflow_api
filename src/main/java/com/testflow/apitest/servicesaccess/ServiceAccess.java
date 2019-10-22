@@ -333,10 +333,12 @@ public class ServiceAccess {
         catch (Exception e) {
             System.out.print(e);
         }
-        if(field == null || field.getType()  == null)
+        if(field == null || field.getType()  == null) {
             return "";
-        else
+        }
+        else {
             return field.getType().getName();
+        }
     }
 
     /**
@@ -348,7 +350,7 @@ public class ServiceAccess {
         String fieldStr = "";
         if (pkList != null) {
             for (String pkItemStr : pkList) {
-                if (fieldStr == "") {
+                if ("".equals(fieldStr)) {
                     fieldStr = pkItemStr;
                 } else {
                     fieldStr = fieldStr + "," + pkItemStr;
