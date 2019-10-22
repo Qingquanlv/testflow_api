@@ -3,7 +3,7 @@
 
 
 ### introduction：
-随着测试场景的复杂性增加，仅仅通过发送Request对比固定Responce的方式已经很难覆盖现有接口测试场景。所以这个时候你需要End-To-End testing模式的testflow_api.
+目前随着测试场景的复杂性增加，仅仅通过发送Request对比固定Responce的方式已经很难覆盖现有接口测试场景。所以这个时候你需要End-To-End testing模式的testflow_api.
 
 ### architecture：
 <img src="https://github.com/Qingquanlv/testflow_api/blob/master/liuchengtu.png" width = 100% height = 100% />
@@ -12,7 +12,7 @@
 #### testflow_API的优势：
 
 #### 1. 易用性
-Testflow_api目前支持两种模式，java代码模式和XML模式。一行代码搞定接口测试，
+Testflow_api目前支持两种模式，java代码模式和XML模式。一行代码搞定接口测试。
 
 ##### java代码模式：
 ```java
@@ -21,15 +21,27 @@ TestFlowManager.runner().sendRequest("",
                 "weather");
 ```
 ##### xml模式：
-```ruby
-Scenario: Query weather
-  #查询北京地区天气 
-    When I send JSON request "" to url "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01" get "weather"
+```java
+@TestFlowTest(path = "src\\main\\resources\\weather.xml")
+    public void test(Map<String, String> map) {
+        TestFlowFileManager.runner().executeFile(map, "src\\main\\resources\\weather.xml");
+        TestFlowManager.runner().deposed();
+    }
+```
+```xml
+<request id="weather" method="post" contenttype="json">
+    <url>https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01</url>
+    <body>
+    {
+    }
+    </body>
+</request>
 ```
 
 #### 2. 行为模式封装
 Testflow_api根据具体的操作步骤封装sendRquest，Parse，QueryDB，Veryfy四类方法。
 
+##### java代码模式：
 ```java
 TestFlowManager.runner().sendRequest("",
                 "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01",
@@ -38,124 +50,59 @@ TestFlowManager.runner().sendRequest("",
                         "Beijing");
 ```
 
+##### xml模式：
 ```xml
-TestFlowManager.runner().sendRequest("",
-                "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01",
-                "weather").verify("weather",
-                        "/HeWeather6/*[0]/basic/location",
-                        "Beijing");
+<request id="weather" method="post" contenttype="json">
+    <url>https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01</url>
+    <body>
+    {
+    }
+    </body>
+</request>
 ```
 
+#### 3. End-To-End testing
+Testflow_api提供sendRquest，Parse，QueryDB，Veryfy四类方法和缓存机制模拟完整的调用链。
 
-#### 3. End-TO-End测试
-Testflow_api提供中间缓存和parse方法可以对待测需求的进行End-TO-End测试。
-
-##### 子类重写的方式：
-```java
-.overrideParse("com.testflow.apitest.testentity.JsonsRootBean",
-                "weather1",
-                "weather2", new DataParser<JsonsRootBean, JsonsRootBean>() {
-            @Override
-            public JsonsRootBean parse(JsonsRootBean sourceData) {
-                JsonsRootBean tar = new JsonsRootBean();
-                tar.setHeweather6(sourceData.getHeweather6());
-                return tar;
-            }
-        })
-```
-
-
-```java
-//缓存中获取的key值${weather1:/HeWeather6/*[0]/basic/location}
-TestFlowManager.runner().sendRequest("",
-                "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01",
-                "weather1").sendRequest("",
-                        "https://free-api.heweather.net/s6/weather/forecast?location=${weather1:/HeWeather6/*[0]/basic/location}&key=245b7545b69b4b4a9bc2a7e497a88b01",
-                        "weather2").verify("weather2",
-                        "/HeWeather6/*[0]/basic/location",
-                        "Beijing");
-```
-
-##### 反射文件的方式：
-```java
-.reflectParse("com.testflow.apitest.normaltest.TestMethod",
-                "convertMethod",
-                "weather1",
-                "com.testflow.apitest.testentity.JsonsRootBean",
-                "weather2"
-        )
-```
-
-##### 插入String格式代码片方式：
-```java
-.sourceParse(javaFileSource,
-                "convertMethod",
-                "weather1",
-                "com.testflow.apitest.testentity.JsonsRootBean",
-                "weather2",
-                "com.testflow.apitest.testentity.JsonsRootBean"
-        )
-```
-#### 5. 支持数据驱动
+#### 4. 数据驱动
 
 Testflow_api支持数据驱动模式。
-```java
-TestFlowManager.runner().sendRequest("",
-                "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01",
-                "weather").verify("weather",
-                        "/HeWeather6/*[0]/basic/location",
-                        "Beijing");
-```
 
+##### java代码模式：
+Java代码可以采用Junit数据驱动的方法，这里就不过多介绍。
+
+##### xml模式：
+xml可以使用dataloader标签
 ```xml
-TestFlowManager.runner().sendRequest("",
-                "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01",
-                "weather").verify("weather",
-                        "/HeWeather6/*[0]/basic/location",
-                        "Beijing");
+<given>
+   <dataloader>
+       <parame parame1 = 'parame1' parame2 = 'parame2' />
+   </dataloader>
+</given>
 ```
 
 
-#### 6. 支持Http(s)请求
+#### 5. 支持Http(s)请求
 
 Testflow_api支持多样的Http(s)请求。
+
+#### 6. 支持DataBase操作
+
+Testflow_api支持基于Mybatis的数据库增删改查操作。
+
 ```java
-TestFlowManager.runner().sendRequest("",
-                "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01",
-                "weather").verify("weather",
-                        "/HeWeather6/*[0]/basic/location",
-                        "Beijing");
+TestFlowManager.runner().queryDataBase(parmeType, sqlStr);
 ```
 
 ```xml
-TestFlowManager.runner().sendRequest("",
-                "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01",
-                "weather").verify("weather",
-                        "/HeWeather6/*[0]/basic/location",
-                        "Beijing");
+   <database id="table">
+            <sql>
+                SELECT * FROM table
+            </sql>
+        </database>
 ```
 
-#### 5. 支持DataBase操作
-
-Testflow_api基于Mybatis支持数据库增删改查操作。
-
-```java
-TestFlowManager.runner().sendRequest("",
-                "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01",
-                "weather").verify("weather",
-                        "/HeWeather6/*[0]/basic/location",
-                        "Beijing");
-```
-
-```xml
-TestFlowManager.runner().sendRequest("",
-                "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01",
-                "weather").verify("weather",
-                        "/HeWeather6/*[0]/basic/location",
-                        "Beijing");
-```
-
-#### 6. 多样的断言方法
+#### 7. 多样的断言方法
 
 Testflow_api支持多种的断言方法。
 
@@ -194,7 +141,7 @@ verify("weather1", "weather2");
 <dependency>
     <groupId>com.github.qingquanlv</groupId>
     <artifactId>testflow_api</artifactId>
-    <version>0.0.1</version>
+    <version>2.1.1</version>
 </dependency>
 ```
 
@@ -203,30 +150,6 @@ verify("weather1", "weather2");
 Junit模式链接：
 XML模式链接：
 
-Junit：
-
-```java
-import com.testflow.apitest.TestFlowManager;
-import org.junit.Test;
-
-public class Example {
-
-    @Test
-    public void example1() {
-        TestFlowManager.runner().sendRequest("",
-                "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01",
-                "weather"
-        ).verify("weather",
-                "/HeWeather6/*[0]/basic/location", //Xpath配置Json，验证节点的值
-                "南京").deposed();
-    }
-}
-```
-
-Cucumber：
-
-参考例子：
- com\testflow\apitest\cucumber\feature\test.feature
 
 #### 开放方法
 
