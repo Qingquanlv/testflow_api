@@ -39,10 +39,7 @@ TestFlowManager.runner().sendRequest("",
 ```
 
 
-#### 2. 行为模式封装
-Testflow_api根据具体的操作步骤封装sendRquest，Parse，QueryDB，Veryfy四类方法。
-
-#### 3. End-To-End testing
+#### 2. End-To-End testing
 Testflow_api提供sendRquest，Parse，QueryDB，Veryfy四类方法和缓存机制模拟完整的调用链。
 
 ##### java代码模式：
@@ -132,7 +129,7 @@ Testflow_api提供sendRquest，Parse，QueryDB，Veryfy四类方法和缓存机�
 </feature>
 ```
 
-#### 4. 数据驱动
+#### 3. 数据驱动
 
 Testflow_api支持数据驱动模式。
 
@@ -149,11 +146,7 @@ xml可以使用dataloader标签
 </given>
 ```
 
-#### 5. 支持Http(s)请求
-
-Testflow_api支持多样的Http(s)请求。
-
-#### 6. 支持DataBase操作
+#### 4. 支持DataBase操作
 
 Testflow_api支持基于Mybatis的数据库增删改查操作。
 
@@ -171,7 +164,7 @@ TestFlowManager.runner().queryDataBase(parmeType, sqlStr);
    </database>
 ```
 
-#### 7. 多样的断言方法
+#### 5. 多样的断言方法
 
 Testflow_api支持多种的断言方法。
 
