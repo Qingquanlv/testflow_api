@@ -21,6 +21,15 @@ TestFlowManager.runner().sendRequest("",
                 "weather");
 ```
 ##### xml模式：
+```xml
+<request id="weather" method="post" contenttype="json">
+    <url>https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01</url>
+    <body>
+    {
+    }
+    </body>
+</request>
+```
 ```java
 @TestFlowTest(path = "src\\main\\resources\\weather.xml")
     public void test(Map<String, String> map) {
@@ -28,41 +37,100 @@ TestFlowManager.runner().sendRequest("",
         TestFlowManager.runner().deposed();
     }
 ```
-```xml
-<request id="weather" method="post" contenttype="json">
-    <url>https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01</url>
-    <body>
-    {
-    }
-    </body>
-</request>
-```
+
 
 #### 2. 行为模式封装
 Testflow_api根据具体的操作步骤封装sendRquest，Parse，QueryDB，Veryfy四类方法。
 
+#### 3. End-To-End testing
+Testflow_api提供sendRquest，Parse，QueryDB，Veryfy四类方法和缓存机制模拟完整的调用链。
+
 ##### java代码模式：
 ```java
-TestFlowManager.runner().sendRequest("",
+    //发送请求，使用子类重写模式parse返回报文，再验证对比返回实体的所有字段值
+    @Test
+    public void example4() {
+        TestFlowManager.runner().sendRequest("",
                 "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01",
-                "weather").verify("weather",
-                        "/HeWeather6/*[0]/basic/location",
-                        "Beijing");
+                "weather1"
+        ).overrideParse("com.testflow.apitest.testentity.JsonsRootBean",
+                "weather1",
+                "weather2", new DataParser<JsonsRootBean, JsonsRootBean>() {
+                    @Override
+                    public JsonsRootBean parse(JsonsRootBean sourceData) {
+                        JsonsRootBean tar = new JsonsRootBean();
+                        tar.setHeweather6(sourceData.getHeweather6());
+                        return tar;
+                    }
+                }).verify("com.testflow.apitest.testentity.JsonsRootBean",
+                "weather1",
+                "weather2",
+                "Heweather6:{status}, Daily_forecast:{cond_code_d, cond_code_n}",
+                "Daily_forecast:{wind_dir}");
+    }
 ```
 
 ##### xml模式：
 ```xml
-<request id="weather" method="post" contenttype="json">
-    <url>https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01</url>
-    <body>
-    {
-    }
-    </body>
-</request>
-```
+<feature name="weather">
+    <given>
+        <dataloader>
+            <parame parame1 = 'parame1' />
+        </dataloader>
 
-#### 3. End-To-End testing
-Testflow_api提供sendRquest，Parse，QueryDB，Veryfy四类方法和缓存机制模拟完整的调用链。
+        <classloader>
+            <!--<class>src\main\resources\clazz</class>-->
+        </classloader>
+        <packageloader>
+            <!--<package>src\main\resources\packages</package>-->
+        </packageloader>
+    </given>
+
+    <when>
+        <request id="weather1" method="post" contenttype="json">
+            <url>https://free-api.heweather.net/s6/weather/forecast?location=beijing&amp;key=245b7545b69b4b4a9bc2a7e497a88b01</url>
+            <body>
+                {
+
+                }
+            </body>
+        </request>
+
+        <parse id="weather2" type="source">
+            <source>
+                <parame type = 'com.testflow.apitest.testentity.JsonsRootBean' value = 'weather1'/>
+                <return type = 'com.testflow.apitest.testentity.JsonsRootBean'/>
+                <method name = 'convertMethod'>
+                    public JsonsRootBean convertMethod(JsonsRootBean sourceData) {
+                        JsonsRootBean tar = new JsonsRootBean();
+                        tar.setHeweather6(sourceData.getHeweather6());
+                        return tar;
+                    }
+                </method>
+            </source>
+        </parse>
+    </when>
+
+    <then>
+        <verify id="verify" type="entity">
+            <entitys type="com.testflow.apitest.testentity.JsonsRootBean">
+                <entity>weather1</entity>
+                <entity>weather2</entity>
+            </entitys>
+            <pkkeys>
+                <pkkey>Heweather6:{status}</pkkey>
+                <pkkey>Daily_forecast:{cond_code_d, cond_code_n}</pkkey>
+            </pkkeys>
+            <nocomparekeys>
+                <nocomparekey>Daily_forecast:{wind_dir}</nocomparekey>
+            </nocomparekeys>
+        </verify>
+    </then>
+
+    <config>
+    </config>
+</feature>
+```
 
 #### 4. 数据驱动
 
@@ -81,7 +149,6 @@ xml可以使用dataloader标签
 </given>
 ```
 
-
 #### 5. 支持Http(s)请求
 
 Testflow_api支持多样的Http(s)请求。
@@ -90,16 +157,18 @@ Testflow_api支持多样的Http(s)请求。
 
 Testflow_api支持基于Mybatis的数据库增删改查操作。
 
+##### java代码模式：
 ```java
 TestFlowManager.runner().queryDataBase(parmeType, sqlStr);
 ```
 
+##### xml模式：
 ```xml
    <database id="table">
-            <sql>
-                SELECT * FROM table
-            </sql>
-        </database>
+        <sql>
+           SELECT * FROM table
+        </sql>
+   </database>
 ```
 
 #### 7. 多样的断言方法
@@ -129,7 +198,21 @@ verify("weather1", "weather2");
 ```
 
 
-
+```java
+<verify id="verify" type="entity">
+    <entitys type="com.testflow.apitest.testentity.JsonsRootBean">
+        <entity>weather1</entity>
+        <entity>weather2</entity>
+    </entitys>
+    <pkkeys>
+        <pkkey>Heweather6:{status}</pkkey>
+        <pkkey>Daily_forecast:{cond_code_d, cond_code_n}</pkkey>
+    </pkkeys>
+    <nocomparekeys>
+        <nocomparekey>Daily_forecast:{wind_dir}</nocomparekey>
+    </nocomparekeys>
+</verify>
+```
 
 
 ##  Documentation：
@@ -144,11 +227,6 @@ verify("weather1", "weather2");
     <version>2.1.1</version>
 </dependency>
 ```
-
-#### Junit模式/xml模式
-
-Junit模式链接：
-XML模式链接：
 
 
 #### 开放方法
@@ -262,17 +340,6 @@ ${缓存Key:JSON定位串}
 ${weather1:/HeWeather6/*[0]/basic/location}
 ```
 
-##### Cucumber request模式，请求feature文件写法
-```java
-And I send request "Root" to url "Url" get "targetParamKey" with
-      | Key                                           | Value   |
-      | Child1                                        | parame1 |
-      | Child2:GrandChild                             | parame2 |
-      | ListChild3:ListChild3Item[0]:GrandGrandChild1 | parame3 |
-      | ListChild3:ListChild3Item[1]:GrandGrandChild1 | parame4 |
-      | ListChild3:ListChild3Item[1]:GrandGrandChild2 | parame5 |
-```
-
 ##### 相同类型实体，不对比字段与对比list主键的字符串写法
 ```java
 类名1:{字段名1,字段名2},类名2:{字段名1,字段名2}
@@ -280,10 +347,8 @@ Heweather6:{status}, Daily_forecast:{cond_code_d, cond_code_n}
 ```
 
 
-##  PS：
-1. 目前发送请求只支持Json格式。
-2. 目前缓存只采用Json String的格式存储。
-3. 目前针对大型系统的接口测试，一般采用自动化测试代码动态计算预期值的方式。针对这种模式testflow_api可以迅速支持落地，完成高质量的测试。
+##  Contuct me
+  qingquanlv@gmail.com
 
 
 
