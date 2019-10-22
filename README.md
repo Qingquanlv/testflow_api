@@ -5,8 +5,9 @@
 ### introduction：
 随着测试场景的复杂性和测试数据的多样性增加，仅仅通过发送Request对比固定Responce的方式已经很难覆盖现有接口测试场景。所以这个时候你需要End-TO-End测试模式的testflow_api.
 
-testflow_api测试流程：
-<img src="https://github.com/Qingquanlv/testflow_api/blob/master/liuchengtu.png" width = 40% height = 40% />
+测试架构：
+
+<img src="https://github.com/Qingquanlv/testflow_api/blob/master/liuchengtu.png" width = 100% height = 100% />
 
 
 #### testflow_API的优势：
