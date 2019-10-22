@@ -1,10 +1,13 @@
 package com.testflow.apitest.normaltest;
 
+import com.testflow.apitest.TestFlowFileManager;
 import com.testflow.apitest.TestFlowManager;
 import com.testflow.apitest.business.TestFlowTest;
 import com.testflow.apitest.parser.DataParser;
 import com.testflow.apitest.testentity.JsonsRootBean;
 import org.junit.Test;
+
+import java.util.Map;
 
 public class Example {
 
@@ -112,6 +115,12 @@ public class Example {
                 "weather2",
                 "Heweather6:{status}, Daily_forecast:{cond_code_d, cond_code_n}",
                 "Daily_forecast:{wind_dir}");
+    }
+
+    @TestFlowTest(path = "src\\test\\resources\\weather.xml")
+    public void example7(Map<String, String> map) {
+        TestFlowFileManager.runner().executeFile(map, "src\\test\\resources\\weather.xml");
+        TestFlowManager.runner().deposed();
     }
 
 }
