@@ -182,6 +182,7 @@ verify("weather1", "weather2");
 
 ##### 对比两个实体（包括实体中不对比key和List实体的主键）
 
+##### java代码模式：
 ```java
 .verify("com.testflow.apitest.testentity.JsonsRootBean", //对比实体类型
                 "weather1",
@@ -190,7 +191,7 @@ verify("weather1", "weather2");
                 "Daily_forecast:{wind_dir}") //对比实体中不对比字段
 ```
 
-
+##### xml模式：
 ```java
 <verify id="verify" type="entity">
     <entitys type="com.testflow.apitest.testentity.JsonsRootBean">
