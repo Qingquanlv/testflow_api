@@ -1,0 +1,58 @@
+<feature name="weather">
+    <given>
+        <dataloader>
+            <parame parame1 = 'parame1' />
+        </dataloader>
+
+        <classloader>
+            <!--<class>src\main\resources\clazz</class>-->
+        </classloader>
+        <packageloader>
+            <!--<package>src\main\resources\packages</package>-->
+        </packageloader>
+    </given>
+
+    <when>
+        <request id="weather1" method="post" contenttype="json">
+            <url>https://free-api.heweather.net/s6/weather/forecast?location=beijing&amp;key=245b7545b69b4b4a9bc2a7e497a88b01</url>
+            <body>
+                {
+
+                }
+            </body>
+        </request>
+
+        <parse id="weather2" type="source">
+            <source>
+                <parame type = 'com.testflow.apitest.testentity.JsonsRootBean' value = 'weather1'/>
+                <return type = 'com.testflow.apitest.testentity.JsonsRootBean'/>
+                <method name = 'convertMethod'>
+                    public JsonsRootBean convertMethod(JsonsRootBean sourceData) {
+                        JsonsRootBean tar = new JsonsRootBean();
+                        tar.setHeweather6(sourceData.getHeweather6());
+                        return tar;
+                    }
+                </method>
+            </source>
+        </parse>
+    </when>
+
+    <then>
+        <verify id="verify" type="entity">
+            <entitys type="com.testflow.apitest.testentity.JsonsRootBean">
+                <entity>weather1</entity>
+                <entity>weather2</entity>
+            </entitys>
+            <pkkeys>
+                <pkkey>Heweather6:{status}</pkkey>
+                <pkkey>Daily_forecast:{cond_code_d, cond_code_n}</pkkey>
+            </pkkeys>
+            <nocomparekeys>
+                <nocomparekey>Daily_forecast:{wind_dir}</nocomparekey>
+            </nocomparekeys>
+        </verify>
+    </then>
+
+    <config>
+    </config>
+</feature>
