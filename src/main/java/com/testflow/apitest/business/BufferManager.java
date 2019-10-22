@@ -22,13 +22,16 @@ public class BufferManager {
         requestObjectBufferMap.clear();
     }
 
-    public static String getBufferByKey(String bufferKey) {
+    public static String getBufferByKey(String bufferKey) throws Exception {
+        if(!requestObjectBufferMap.containsKey(bufferKey)) {
+            throw new Exception(String.format("MapKey is invalid: %s", bufferKey));
+        }
         return requestObjectBufferMap.get(bufferKey);
     }
 
-    public static void addBufferByKey(String bufferKey, String bufferObject) {
+    public static void addBufferByKey(String bufferKey, String bufferVal) {
         if(!bufferExist(bufferKey)) {
-            requestObjectBufferMap.put(bufferKey, bufferObject);
+            requestObjectBufferMap.put(bufferKey, bufferVal);
         }
         else
         {
@@ -43,7 +46,7 @@ public class BufferManager {
                 }
                 i++;
             }
-            requestObjectBufferMap.put(bufferKey, bufferObject);
+            requestObjectBufferMap.put(bufferKey, bufferVal);
         }
     }
 

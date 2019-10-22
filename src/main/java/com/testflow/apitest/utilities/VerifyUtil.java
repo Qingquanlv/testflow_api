@@ -47,7 +47,6 @@ public class VerifyUtil {
      */
     public void compareEntity(Object expObj, Object atlObj, Map<String, List<String>> pkMap, Map<String, List<String>> noCompareItemMap)
     {
-        //logger.info(String.format("%s: Start to compare object %s. Expected: \"%s\", Actual \"%s\".", new Date(), index, expObj, atlObj));
         if (isList(expObj) && isList(atlObj))
         {
             List<Object> expObjList = new ArrayList<>();
@@ -58,10 +57,8 @@ public class VerifyUtil {
             }
             catch (Exception ex)
             {
-                //logger.error(String.format("Parse data \"%s\", \"%s\" to list failed", expObj.toString(), atlObj.toString()) + ex);
                 errorMsg.append(String.format("Parse data \"%s\", \"%s\" to list failed.\n", expObj.toString(), atlObj.toString()) + ex);
             }
-            //logger.info(String.format("Start to compare List %s. Expected: \"%s\", Actual \"%s\".", index, expObjList, atlObjList));
             compareList(expObjList, atlObjList, pkMap, noCompareItemMap);
         }
         else
@@ -75,13 +72,13 @@ public class VerifyUtil {
                 if (noCompareItemList !=null && noCompareItemList.contains(f.getName())){
                     continue;
                 }
-                Method fieldSetMet = getValueViaGetMet(f, atlObj);
-                Object cAtlObj = ServiceAccess.execMethod(atlObj, fieldSetMet);
-                Object cExpObj = ServiceAccess.execMethod(expObj, fieldSetMet);
+                Object cAtlObj = ServiceAccess.reflectField(atlObj, f);
+                Object cExpObj = ServiceAccess.reflectField(expObj, f);
+                if (null != cAtlObj && cAtlObj.getClass().getSimpleName().toLowerCase().equals("recordschema")) {
+                    continue;
+                }
                 index.push(f.getName());
-                //logger.info(String.format("Start to compare field \"%s\".  Expected: \"%s\", Actual \"%s\".", index, expObj, atlObj));
                 if(!equals(cExpObj, cAtlObj, pkMap, noCompareItemMap)) {
-                    //logger.error(String.format("Index: %s expected: \"%s\" not equals with actual: \"%s\".", index, cExpObj, cAtlObj));
                     errorMsg.append(String.format("Index: %s expected: \"%s\" not equals with actual: \"%s\".\n", index, cExpObj, cAtlObj));
                 }
                 else {
@@ -106,24 +103,24 @@ public class VerifyUtil {
         List<Object> objListCompared = new ArrayList<>();
         //如果两个List长度不相等，返回error message
         if (expObjList.size() != atlObjList.size()) {
-            //logger.error(String.format("List %s length not mathched. Expected: \"%d\", Actual \"%d\" Expected List: \"%s\", Actual List \"%s\".", index, expObjList.size(), atlObjList.size(), expObjList, atlObjList));
             errorMsg.append(String.format("List %s length not mathched. Expected: \"%d\", Actual \"%d\" Expected List: \"%s\", Actual List \"%s\".\n", index, expObjList.size(), atlObjList.size(), expObjList, atlObjList));
         }
         //循环遍历exp List
         for (Object expObjItem : expObjList) {
             int i = 0;
+            int j = atlObjList.size();
             //循环遍历atl List
             List<String> pkList = pkMap.get(expObjItem.getClass().getSimpleName());
             List<String> noCompareItemList = noCompareItemMap.get(expObjItem.getClass().getSimpleName());
             for (Object atlObjItem : atlObjList) {
-                List<Field> primaryFields = ServiceAccess.getPrimaryFields(expObjItem, pkList);
+                List<Object> primaryFields = ServiceAccess.getPrimaryFields(expObjItem, pkList);
                 if (primaryFields.size() > 0) {
                     //根据实体主键对比实体，如果不相等则continue
-                    if (!compareObjWithSpecificCol(expObjItem, atlObjItem, primaryFields)) {
+                    if (!compareObjWithSpecificCol(expObjItem, atlObjItem, pkList)) {
                         i++;
                         continue;
                     }
-                    index.push(expObjItem.getClass().getSimpleName() + "[" + i + "]");
+                    index.push(expObjItem.getClass().getSimpleName() + pkList + primaryFields);
                     //获取当前对比实体的所有属性
                     Field[] fs = ServiceAccess.reflectDeclaredFields(atlObjItem);
                     for (Field f : fs) {
@@ -131,13 +128,13 @@ public class VerifyUtil {
                         if (noCompareItemList != null && noCompareItemList.contains(f.getName())){
                             continue;
                         }
-                        Method fieldSetMet = getValueViaGetMet(f, atlObjItem);
-                        Object atlObj = ServiceAccess.execMethod(atlObjItem, fieldSetMet);
-                        Object expObj = ServiceAccess.execMethod(expObjItem, fieldSetMet);
+                        Object atlObj = ServiceAccess.reflectField(atlObjItem, f);
+                        Object expObj = ServiceAccess.reflectField(expObjItem, f);
+                        if (null != atlObj && atlObj.getClass().getSimpleName().toLowerCase().equals("recordschema")) {
+                            continue;
+                        }
                         index.push(f.getName());
-                        //logger.info(String.format("Start to compare field %s. Expected: \"%s\", Actual \"%s\".", index, expObj, atlObj));
                         if(!equals(expObj, atlObj, pkMap, noCompareItemMap)) {
-                            //logger.error(String.format("Index: %s expected: \"%s\" not equals with actual: \"%s\".", index, expObj, atlObj));
                             errorMsg.append(String.format("Index: %s expected: \"%s\" not equals with actual: \"%s\".\n", index, expObj, atlObj));
                         }
                         else
@@ -147,8 +144,8 @@ public class VerifyUtil {
                         index.pop();
                     }
                     index.pop();
-                    //对比过的实体添加到List中
-                    objListCompared.add(atlObjItem);
+                    //对比过的实体从list中删除
+                    atlObjList.remove(atlObjItem);
                     break;
                 }
                 else
@@ -157,20 +154,17 @@ public class VerifyUtil {
                 }
             }
             //如果预期值在实际值的objList中不存在
-            if (atlObjList.size() == i)
+            if (j == i)
             {
-                errorMsg.append(String.format("Entity: \"%s\" with primary key: \"%s\" actual value not found.\n", expObjItem, ServiceAccess.getPrimaryFieldsStrViaList(pkList)));
+                errorMsg.append(String.format("Entity: \"%s\" with primary key: \"%s\" value \"%s\" actual value not found.\n", expObjItem, ServiceAccess.getPrimaryFieldsStrViaList(pkList), ServiceAccess.getPrimaryFields(expObjItem, pkList)));
             }
         }
 
-        if(objListCompared.size() == 0 || atlObjList.removeAll(objListCompared))
+        for(Object leftObj : atlObjList)
         {
-            for(Object leftObj : atlObjList)
-            {
-                //获取主键List
-                List<String> pkList = pkMap.get(leftObj.getClass().getSimpleName());
-                errorMsg.append(String.format("Entity: \"%s\" with primary key: \"%s\" expect value not found.\n", leftObj, ServiceAccess.getPrimaryFieldsStrViaList(pkList)));
-            }
+            //获取主键List
+            List<String> pkList = pkMap.get(leftObj.getClass().getSimpleName());
+            errorMsg.append(String.format("Entity: \"%s\" with primary key: \"%s\" value \"%s\" expect value not found.\n", leftObj, ServiceAccess.getPrimaryFieldsStrViaList(pkList), ServiceAccess.getPrimaryFields(leftObj, pkList)));
         }
     }
 
@@ -179,15 +173,15 @@ public class VerifyUtil {
      *
      * @param obj1 对比的第一个实体
      * @param obj2 对比的第二个实体
-     * @param fields 需要对比的属性List
+     * @param fieldPaths 需要对比的属性List
      * @return boolean 是否相等
      */
-    public boolean compareObjWithSpecificCol(Object obj1, Object obj2, List<Field> fields)
+    public boolean compareObjWithSpecificCol(Object obj1, Object obj2, List<String> fieldPaths)
     {
         boolean ret = true;
-        for (Field field : fields)
+        for (String field : fieldPaths)
         {
-            if(!ConversionUtil.DBValEquals(ServiceAccess.reflectField(obj1, field), ServiceAccess.reflectField(obj2, field)))
+            if(!DataValEquals(ServiceAccess.reflectField(obj1, field), ServiceAccess.reflectField(obj2, field)))
             {
                 ret = false;
             }
@@ -276,51 +270,125 @@ public class VerifyUtil {
      */
     private boolean equals(Object obj1, Object obj2, Map<String, List<String>> pkMap, Map<String, List<String>> noCompareItemMap) {
         logger.info(String.format("%s: Start to compare object %s, Expected: \"%s\", Actual \"%s\".", new Date(), index, obj1, obj2));
-        if (obj1 == null && obj2 != null) {
-            return false;
-        } else if (obj1 != null && obj2 == null) {
-            return false;
-        } else if (obj1 == null && obj2 == null) {
+        if (obj1 == null && "".equals(obj2)) {
             return true;
-        } else if (obj1 instanceof Integer) {
-            int value1 = ((Integer) obj1).intValue();
-            int value2 = ((Integer) obj2).intValue();
+        }
+        else if ("".equals(obj1) && obj2 == null) {
+            return true;
+        }
+        else if (obj1 == null && obj2 == null) {
+            return true;
+        }
+        else if (obj1 == null && obj2 != null) {
+            return false;
+        }
+        else if (obj1 != null && obj2 == null) {
+            return false;
+        }
+
+        else if (obj1 instanceof Integer) {
+            int value1 = (Integer) obj1;
+            int value2 = (Integer) obj2;
             return value1 == value2;
-        } else if (obj1 instanceof BigDecimal) {
+        }
+        else if (obj1 instanceof BigDecimal) {
             double value1 = ((BigDecimal) obj1).doubleValue();
             double value2 = ((BigDecimal) obj2).doubleValue();
             return value1 == value2;
-        } else if (obj1 instanceof String) {
+        }
+        else if (obj1 instanceof String) {
             String value1 = (String) obj1;
             String value2 = (String) obj2;
             return value1.equals(value2);
-        } else if (obj1 instanceof Double) {
-            double value1 = ((Double) obj1).doubleValue();
-            double value2 = ((Double) obj2).doubleValue();
+        }
+        else if (obj1 instanceof Double) {
+            double value1 = (Double) obj1;
+            double value2 = (Double) obj2;
             return value1 == value2;
-        } else if (obj1 instanceof Float) {
-            float value1 = ((Float) obj1).floatValue();
-            float value2 = ((Float) obj2).floatValue();
+        }
+        else if (obj1 instanceof Float) {
+            float value1 = (Float) obj1;
+            float value2 = (Float) obj2;
             return value1 == value2;
         } else if (obj1 instanceof Long) {
-            long value1 = ((Long) obj1).longValue();
-            long value2 = ((Long) obj2).longValue();
+            long value1 = (Long) obj1;
+            long value2 = (Long) obj2;
             return value1 == value2;
-        } else if (obj1 instanceof Boolean) {
-            boolean value1 = ((Boolean) obj1).booleanValue();
-            boolean value2 = ((Boolean) obj2).booleanValue();
+        }
+        else if (obj1 instanceof Boolean) {
+            boolean value1 = (Boolean) obj1;
+            boolean value2 = (Boolean) obj2;
             return value1 == value2;
-        } else if (obj1 instanceof Date) {
+        }
+        else if (obj1 instanceof Date) {
             Date value1 = (Date) obj1;
             Date value2 = (Date) obj1;
             return value1.toString().equals(value2.toString());
-        } else if (obj1 != null && obj1.getClass() != null && obj1.getClass().getName() != null && obj1.getClass().getName().toLowerCase().contains("enum")) {
+        }
+        else if (obj1 != null && obj1.getClass() != null && obj1.getClass().getName() != null && obj1.getClass().getName().toLowerCase().contains("enum")) {
             String value1 = obj1.toString();
             String value2 = obj2.toString();
             return value1.equals(value2);
-        } else {
+        }
+        else {
             compareEntity(obj1, obj2, pkMap, noCompareItemMap);
             return true;
+        }
+    }
+
+    public static boolean DataValEquals(Object obj1, Object obj2) {
+        if (obj1 == null && "".equals(obj2)) {
+            return true;
+        }
+        else if ("".equals(obj1) && obj2 == null) {
+            return true;
+        }
+        else if (obj1 == null && obj2 == null) {
+            return true;
+        }
+        else if (obj1 == null && obj2 != null) {
+            return false;
+        }
+        else if (obj1 != null && obj2 == null) {
+            return false;
+        }
+        else if (obj1 instanceof Integer) {
+            int value1 = ((Integer) obj1).intValue();
+            int value2 = ((Integer) obj2).intValue();
+            return value1 == value2;
+        }
+        else if (obj1 instanceof String) {
+            String value1 = (String) obj1;
+            String value2 = (String) obj2;
+            return value1.equals(value2);
+        }
+        else if (obj1 instanceof Double) {
+            double value1 = ((Double) obj1).doubleValue();
+            double value2 = ((Double) obj2).doubleValue();
+            return value1 == value2;
+        }
+        else if (obj1 instanceof Float) {
+            float value1 = ((Float) obj1).floatValue();
+            float value2 = ((Float) obj2).floatValue();
+            return value1 == value2;
+        }
+        else if (obj1 instanceof Long) {
+            long value1 = ((Long) obj1).longValue();
+            long value2 = ((Long) obj2).longValue();
+            return value1 == value2;
+        }
+        else if (obj1 instanceof Boolean) {
+            boolean value1 = ((Boolean) obj1).booleanValue();
+            boolean value2 = ((Boolean) obj2).booleanValue();
+            return value1 == value2;
+        }
+        else if (obj1 instanceof Date) {
+            Date value1 = (Date) obj1;
+            Date value2 = (Date) obj1;
+            return value1.toString().equals(value2.toString());
+        }
+        else {
+            return false;
         }
     }
 }

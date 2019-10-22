@@ -21,14 +21,9 @@ public class ServiceAccess {
      * @param objectName 反射类名
      * @return Class<?> 返回类Class
      */
-    public static Class<?> reflectClazz(String objectName)  {
+    public static Class<?> reflectClazz(String objectName) throws Exception {
         Class<?> clazz = null;
-        try {
-            clazz = Class.forName(objectName);
-        }
-        catch (Exception ex) {
-            logger.warn(String.format("Reflect object: create class \"%s\" failed. ", objectName) + ex);
-        }
+        clazz = Class.forName(objectName);
         return clazz;
     }
 
@@ -90,20 +85,19 @@ public class ServiceAccess {
     }
 
     /**
-     * 根据类实例和方法名和方法形参，获取方法
+     * 根据类实例和方法名和方法的一个形参，获取方法
      *
-     * @param bean : 类实例
+     * @param clazz : 类
      * @param methodName : 要反射的类方法
      * @return Method : 方法字节码
      */
-    public static Method getObjMethod(Object bean, String methodName, String firstParam)  {
-        Class<?> clazz = bean.getClass();
+    public static Method reflectMethod(Class<?> clazz, String methodName, Class<?> firstParamType)  {
         Method method = null;
         try {
-            method = clazz.getMethod(methodName, firstParam.getClass());
+            method = clazz.getMethod(methodName, firstParamType);
         }
-        catch (Exception e) {
-            logger.warn(String.format("Init object: Get object \"%s\" method \"%s\" failed.", bean, methodName) + e);
+        catch (Exception ex) {
+            logger.warn(String.format("Init object: relect method %s in object %s failed.", method, clazz) + ex);
         }
         return method;
     }
@@ -115,10 +109,46 @@ public class ServiceAccess {
      * @param methodName : 要反射的类方法
      * @return Method : 方法字节码
      */
-    public static Method reflectMethod(Class<?> clazz, String methodName, Class<?> firstParamType)  {
+    public static Method reflectMethod(Class<?> clazz, String methodName, Class<?> firstParamType, Class<?> secondParamType)  {
         Method method = null;
         try {
-            method = clazz.getMethod(methodName, firstParamType);
+            method = clazz.getMethod(methodName, firstParamType, secondParamType);
+        }
+        catch (Exception ex) {
+            logger.warn(String.format("Init object: relect method %s in object %s failed.", method, clazz) + ex);
+        }
+        return method;
+    }
+
+    /**
+     * 根据类实例和方法名和方法的一个形参，获取方法
+     *
+     * @param clazz : 类
+     * @param methodName : 要反射的类方法
+     * @return Method : 方法字节码
+     */
+    public static Method reflectMethod(Class<?> clazz, String methodName, Class<?> firstParamType, Class<?> secondParamType, Class<?> thirdParamType)  {
+        Method method = null;
+        try {
+            method = clazz.getMethod(methodName, firstParamType, secondParamType, thirdParamType);
+        }
+        catch (Exception ex) {
+            logger.warn(String.format("Init object: relect method %s in object %s failed.", method, clazz) + ex);
+        }
+        return method;
+    }
+
+    /**
+     * 根据类实例和方法名和方法的一个形参，获取方法
+     *
+     * @param clazz : 类
+     * @param methodName : 要反射的类方法
+     * @return Method : 方法字节码
+     */
+    public static Method reflectMethod(Class<?> clazz, String methodName, Class<?> firstParamType, Class<?> secondParamType, Class<?> thirdParamType, Class<?> forthParamType)  {
+        Method method = null;
+        try {
+            method = clazz.getMethod(methodName, firstParamType, secondParamType, thirdParamType, forthParamType);
         }
         catch (Exception ex) {
             logger.warn(String.format("Init object: relect method %s in object %s failed.", method, clazz) + ex);
@@ -226,6 +256,30 @@ public class ServiceAccess {
     }
 
     /**
+     * 根据实例和A|B|C格式路径反射相应属性的值
+     *
+     * @param bean : 类实例
+     * @return Object : 返回相应属性值
+     */
+    public static Object reflectField(Object bean, String fieldPath) {
+        try {
+            //设置访问性，反射类的方法，设置为true就可以访问private修饰的东西，否则无法访问
+            String[] fields = fieldPath.split("\\|");
+            for (String item : fields) {
+                Class<?> clazz = bean.getClass();
+                Field field = clazz.getDeclaredField(item.trim());
+                field.setAccessible(true);
+                bean = field.get(bean);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.warn(String.format("Get field: Get object \"%s\" field \"%s\" failed.", bean, fieldPath) + ex);
+        }
+        return bean;
+    }
+
+    /**
      * 根据实例获取相应属性List的值和的字符串
      *
      * @param bean : 类实例
@@ -242,24 +296,24 @@ public class ServiceAccess {
     }
 
     /**
-     * 根据属性名List获取所有主键属性
+     * 根据属性名List获取所有主键值
      *
      * @param bean : 类实例
      * @param pkList : 主键List
      * @return Field : 返回相应注解值
      */
-    public static List<Field> getPrimaryFields(Object bean, List<String> pkList) {
-        List<Field> reFields = new ArrayList<>();
+    public static List<Object> getPrimaryFields(Object bean, List<String> pkList) {
+        List<Object> list = new ArrayList<>();
         try {
             for(String fieldName : pkList) {
-                Field field = bean.getClass().getDeclaredField(fieldName);
-                reFields.add(field);
+                Object field = reflectField(bean, fieldName);
+                list.add(field);
             }
         }
         catch (Exception e) {
             logger.warn(String.format("Get field failed: Get object \"%s\" primary key fields \"%s\" failed.", bean, pkList) + e);
         }
-        return reFields;
+        return list;
     }
 
 
@@ -279,10 +333,12 @@ public class ServiceAccess {
         catch (Exception e) {
             System.out.print(e);
         }
-        if(field == null || field.getType()  == null)
+        if(field == null || field.getType()  == null) {
             return "";
-        else
+        }
+        else {
             return field.getType().getName();
+        }
     }
 
     /**
@@ -294,7 +350,7 @@ public class ServiceAccess {
         String fieldStr = "";
         if (pkList != null) {
             for (String pkItemStr : pkList) {
-                if (fieldStr == "") {
+                if ("".equals(fieldStr)) {
                     fieldStr = pkItemStr;
                 } else {
                     fieldStr = fieldStr + "," + pkItemStr;

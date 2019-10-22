@@ -36,6 +36,12 @@ public class FastJsonUtil {
         return JSON.parseObject(text, clazz);
     }
 
+    public static <T> List<T> toListBean(String text, Class<T> clazz) {
+        return JSON.parseArray(text,clazz);
+    }
+
+
+
     public static Object jsonToBean(String jsonString, Object beanCalss) {
         Object newObj = JSON.parseObject(jsonString, Object.class);
         return newObj;

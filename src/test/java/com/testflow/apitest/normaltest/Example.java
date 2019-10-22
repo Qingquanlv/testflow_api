@@ -1,6 +1,7 @@
 package com.testflow.apitest.normaltest;
 
 import com.testflow.apitest.TestFlowManager;
+import com.testflow.apitest.business.TestFlowTest;
 import com.testflow.apitest.parser.DataParser;
 import com.testflow.apitest.testentity.JsonsRootBean;
 import org.junit.Test;
@@ -10,7 +11,8 @@ public class Example {
     //发送请求后，验证返回报文某一节点的值
     @Test
     public void example1() {
-        TestFlowManager.runner().sendRequest("",
+        TestFlowManager.runner().addBuffer("abc","abc")
+                .sendRequest("",
                 "https://free-api.heweather.net/s6/weather/forecast?location=beijing&key=245b7545b69b4b4a9bc2a7e497a88b01",
                 "weather"
         ).verify("weather",
