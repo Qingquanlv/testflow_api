@@ -57,13 +57,15 @@ public class ParamUtil {
                     System.out.println(String.format("No matiched value for key \"%s\" Json string \"%s\" .", bufferKeyAndValue[1], str));
                 }
                 else {
-                    for (int i = 0; i< objList.size() ; i++) {
-                        if (reqList.size() > i + 1) {
-                            updateParameStr(reqList.get(i),param, objList.get(i).toString());
+                    int i = 0;
+                    for (Object value : objList) {
+                        if (reqList.size() > i) {
+                            updateParameStr(value.toString(), param, value.toString());
                         }
                         else {
                             reqList.add(updateParameStr(val, param, objList.get(i).toString()));
                         }
+                        i++;
                     }
                 }
             }
