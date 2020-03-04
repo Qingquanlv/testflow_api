@@ -5,7 +5,7 @@ import com.testflow.apitest.TestFlowManager;
 import com.testflow.apitest.business.TestFlowTest;
 import com.testflow.apitest.parser.DataParser;
 import com.testflow.apitest.testentity.JsonsRootBean;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
