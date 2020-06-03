@@ -125,7 +125,7 @@ public class VerifyUtil {
                     Field[] fs = ServiceAccess.reflectDeclaredFields(atlObjItem);
                     for (Field f : fs) {
                         //根据属性名判断，有关属性不进行匹配
-                        if (noCompareItemList != null && noCompareItemList.contains(f.getName())){
+                        if (noCompareItemList != null && noCompareItemList.contains(f.getName())) {
                             continue;
                         }
                         Object atlObj = ServiceAccess.reflectField(atlObjItem, f);
@@ -134,11 +134,9 @@ public class VerifyUtil {
                             continue;
                         }
                         index.push(f.getName());
-                        if(!equals(expObj, atlObj, pkMap, noCompareItemMap)) {
+                        if (!equals(expObj, atlObj, pkMap, noCompareItemMap)) {
                             errorMsg.append(String.format("Index: %s expected: \"%s\" not equals with actual: \"%s\".\n", index, expObj, atlObj));
-                        }
-                        else
-                        {
+                        } else {
                             //logger.info(String.format("Index: %s expected obj: \"%s\" equals with actual obj \"%s\".", index, expObj, atlObj));
                         }
                         index.pop();
@@ -147,15 +145,23 @@ public class VerifyUtil {
                     //对比过的实体从list中删除
                     atlObjList.remove(atlObjItem);
                     break;
-                }
-                else
-                {
-                    errorMsg.append(String.format("Current entity \"%s\" primary key: \"%s\" no found, please check if the primary keys are correct.\n", expObjItem, ServiceAccess.getPrimaryFieldsStrViaList(pkList)));
+
+                } else {
+                    //对比list<String> 类型
+                    if ("String".equals(atlObjItem.getClass().getSimpleName()) || "Integer".equals(atlObjItem.getClass().getSimpleName())) {
+                        if (!expObjList.contains(atlObjItem)) {
+                            errorMsg.append(String.format("Entity List: \"%s\" value \"%s\" actual value not found.\n", expObjList, atlObjItem));
+                        } else {
+                            atlObjList.remove(atlObjItem);
+                            break;
+                        }
+                    } else {
+                        errorMsg.append(String.format("Current entity \"%s\" primary key: \"%s\" no found, please check if the primary keys are correct.\n", expObjItem, ServiceAccess.getPrimaryFieldsStrViaList(pkList)));
+                    }
                 }
             }
             //如果预期值在实际值的objList中不存在
-            if (j == i)
-            {
+            if (j == i) {
                 errorMsg.append(String.format("Entity: \"%s\" with primary key: \"%s\" value \"%s\" actual value not found.\n", expObjItem, ServiceAccess.getPrimaryFieldsStrViaList(pkList), ServiceAccess.getPrimaryFields(expObjItem, pkList)));
             }
         }

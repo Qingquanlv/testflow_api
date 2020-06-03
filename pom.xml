@@ -10,7 +10,7 @@
 
     <name>testflow_api</name>
     <url>https://github.com/Qingquanlv/testflow_api.git</url>
-    <description>轻量级接口测试框架</description>
+    <description>End-To-End interface test framework</description>
 
     <dependencies>
 
